@@ -1,16 +1,19 @@
-from weatherData import WeatherData
-from meteo_utils import MeteoDataProcessor
+
+from meteo_utils import MeteoDataProcessor 
+from meteo_utils import MeteoDataDetector 
 
 if __name__ == '__main__':
-    weather_data = WeatherData()
+    weather_data = MeteoDataDetector()
     processor = MeteoDataProcessor()
 
     # Generar 5 registros de datos de tiempo
 
-    for i in range(5):
-        data = weather_data.generate_data()
-        print(f"Registro {i+1}: Temperatura {data.temperature}")
-        wellness_data = processor.process_meteo_data(data)
+    meteo_data = weather_data.analyze_air()
+    pollution_data = weather_data.analyze_pollution()
+    wellness_data = processor.process_meteo_data(meteo_data)
+    
+    pollution_data = processor.process_pollution_data(pollution_data)
+    print(pollution_data)
         
 
     

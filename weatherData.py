@@ -8,5 +8,5 @@ class WeatherData:
         temperature = self.detector.gen_temperature()
         humidity = self.detector.gen_humidity()
         timestamp = datetime.now()
-        meteodata = MeteoDataDetector(temperature=temperature, humidity=humidity, timestamp=timestamp)
+        meteodata = (temperature, humidity,timestamp)
         return meteodata

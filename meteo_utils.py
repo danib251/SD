@@ -92,6 +92,7 @@ class MeteoDataDetector:
             "temperature": self.gen_temperature(),
             "humidity": self.gen_humidity()
         }
+    
 
     def analyze_pollution(self):
         """
@@ -148,9 +149,8 @@ class MeteoDataProcessor:
 
 
         # Get the wellness value of each parameter based on the processor's distributions.
-        temperature_wellness = _value_from_distribution(self.temperature_space, self.temperature_vals,
-                                                        meteo_data.temperature)
-        humidity_wellness = _value_from_distribution(self.humidity_space, self.humidity_vals, meteo_data.humidity)
+        temperature_wellness = _value_from_distribution(self.temperature_space, self.temperature_vals, meteo_data['temperature'])
+        humidity_wellness = _value_from_distribution(self.humidity_space, self.humidity_vals, meteo_data['humidity'])
 
         # Harmonic mean
         air_wellness = round(2 / (1 / temperature_wellness + 1 / humidity_wellness), 2)
@@ -165,7 +165,7 @@ class MeteoDataProcessor:
         :param meteo_data: a class with the attribute "co2" and its respective value within the accepted ranges.
         """
 
-        co2_wellness = _value_from_distribution(self.co2_space, self.co2_vals, pollution_data.co2)
+        co2_wellness = _value_from_distribution(self.co2_space, self.co2_vals, pollution_data['co2'])
 
         co2_wellness = round(co2_wellness, 2)
 
