@@ -1,40 +1,46 @@
-import xmlrpc.server
-import xmlrpc.client
-import meteo_utils  # importe las funciones necesarias de util.py
+import random
+import grpc
+import time
+import sensor_pb2
+import sensor_pb2_grpc
+import google.protobuf.empty_pb2
+from concurrent import futures
 
-class LoadBalancer:
-    def __init__(self, server_list):
-        # inicializar las variables necesarias, como los puertos de escucha y la lista de servidores
-        self.server_list = server_list
+class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
+    def __init__(self, servers):
+        self.servers = servers
+        self.server_index = 0
 
-    def register_server(self, server_info):
-        # agregar el servidor a la lista de servidores conocidos
-        self.server_list.append(server_info)
+    def ProcessMeteoData(self, request, context):
+        # Choose a server in round-robin fashion
+        server = self.servers[self.server_index]
+        self.server_index = (self.server_index + 1) % len(self.servers)
 
-    def process_data(self, sensor_id, data):
-    # seleccionar el servidor adecuado para procesar los datos en un patrón round-robin
-        server_info = self.server_list.pop(0)
-        self.server_list.append(server_info)
+        # Connect to server and process data
+        print(f"Processing meteo data on server {server}")
+        return google.protobuf.empty_pb2.Empty()
 
-        # enviar la solicitud al servidor seleccionado y devolver la respuesta
-        with xmlrpc.client.ServerProxy(server_info['url']) as server:
-            if sensor_id.startswith('M'):
-                result = server.process_meteo_data(data)
-            elif sensor_id.startswith('P'):
-                result = server.process_pollution_data(data)
-            else:
-                raise ValueError("Invalid sensor ID")
+    def ProcessPollutionData(self, request, context):
+        # Choose a server in round-robin fashion
+        server = self.servers[self.server_index]
+        self.server_index = (self.server_index + 1) % len(self.servers)
 
-        return result
+        # Connect to server and process data
+        print(f"Processing pollution data on server {server}")
+        return google.protobuf.empty_pb2.Empty()
 
+def server():
+    # Create a gRPC server and add the LoadBalancerServicer
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+    sensor_pb2_grpc.add_LoadBalancerServicer_to_server(LoadBalancer(["Server1", "Server2"]), server)
+
+    # Bind the server to a port and start it
+    server.add_insecure_port('[::]:50051')
+    print("gRPC server starting...")
+    server.start()
+
+    # Wait for the server to terminate
+    server.wait_for_termination()
 
 if __name__ == '__main__':
-    # establecer los detalles de conexión y configuración del servidor RPC
-    server_list = []  # lista de servidores conocidos
-    lb = LoadBalancer(server_list)
-    server = xmlrpc.server.SimpleXMLRPCServer(('localhost', 8000))
-    server.register_instance(lb)
-
-    # iniciar el servidor RPC y escuchar las solicitudes entrantes
-    print("Load balancer listening on port 8000...")
-    server.serve_forever()
+    server()

@@ -1,0 +1,19 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+//python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./sensor.proto 
+
+message MeteoData {
+  float temperature = 1;
+  float humidity = 2;
+
+}
+
+message PollutionData {
+  float co2 = 1;
+}
+
+service LoadBalancer {
+  rpc ProcessMeteoData (MeteoData) returns (google.protobuf.Empty) {}
+  rpc ProcessPollutionData (PollutionData) returns (google.protobuf.Empty) {}
+}
+
