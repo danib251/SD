@@ -7,8 +7,8 @@ from meteo_utils import MeteoDataDetector
 import time
 import grpc
 from meteo_utils import MeteoDataDetector
-import sensor_pb2
-import sensor_pb2_grpc
+import sensor_pb2 as sensor_pb2
+import sensor_pb2_grpc as sensor_pb2_grpc
 
 
 class Sensor:
