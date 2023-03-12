@@ -15,6 +15,7 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         # Choose a server in round-robin fashion
         server = self.servers[self.server_index]
         self.server_index = (self.server_index + 1) % len(self.servers)
+        print("Got request " + str(request))
 
         # Connect to server and process data
         print(f"Processing meteo data on server {server}")
@@ -24,7 +25,7 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         # Choose a server in round-robin fashion
         server = self.servers[self.server_index]
         self.server_index = (self.server_index + 1) % len(self.servers)
-
+        print("Got request " + str(request))
         # Connect to server and process data
         print(f"Processing pollution data on server {server}")
         return google.protobuf.empty_pb2.Empty()
