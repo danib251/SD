@@ -12,19 +12,20 @@ _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0csensor.proto\x1a\x1bgoogle/protobuf/empty.proto\"2\n\tMeteoData\x12\x13\n\x0btemperature\x18\x01 \x01(\x02\x12\x10\n\x08humidity\x18\x02 \x01(\x02\"\x1c\n\rPollutionData\x12\x0b\n\x03\x63o2\x18\x01 \x01(\x02\x32\x8a\x01\n\x0cLoadBalancer\x12\x38\n\x10ProcessMeteoData\x12\n.MeteoData\x1a\x16.google.protobuf.Empty\"\x00\x12@\n\x14ProcessPollutionData\x12\x0e.PollutionData\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0csensor.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"t\n\tMeteoData\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\x13\n\x0btemperature\x18\x02 \x01(\x02\x12\x10\n\x08humidity\x18\x03 \x01(\x02\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"^\n\rPollutionData\x12\x0b\n\x03\x63o2\x18\x01 \x01(\x02\x12\x11\n\tsensor_id\x18\x02 \x01(\x05\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp2\x8a\x01\n\x0cLoadBalancer\x12\x38\n\x10ProcessMeteoData\x12\n.MeteoData\x1a\x16.google.protobuf.Empty\"\x00\x12@\n\x14ProcessPollutionData\x12\x0e.PollutionData\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'sensor_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _METEODATA._serialized_start=45
-  _METEODATA._serialized_end=95
-  _POLLUTIONDATA._serialized_start=97
-  _POLLUTIONDATA._serialized_end=125
-  _LOADBALANCER._serialized_start=128
-  _LOADBALANCER._serialized_end=266
+  _METEODATA._serialized_start=78
+  _METEODATA._serialized_end=194
+  _POLLUTIONDATA._serialized_start=196
+  _POLLUTIONDATA._serialized_end=290
+  _LOADBALANCER._serialized_start=293
+  _LOADBALANCER._serialized_end=431
 # @@protoc_insertion_point(module_scope)

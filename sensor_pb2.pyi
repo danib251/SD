@@ -5,6 +5,7 @@ isort:skip_file
 import builtins
 import google.protobuf.descriptor
 import google.protobuf.message
+import google.protobuf.timestamp_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -18,17 +19,25 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class MeteoData(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    SENSOR_ID_FIELD_NUMBER: builtins.int
     TEMPERATURE_FIELD_NUMBER: builtins.int
     HUMIDITY_FIELD_NUMBER: builtins.int
+    TIMESTAMP_FIELD_NUMBER: builtins.int
+    sensor_id: builtins.int
     temperature: builtins.float
     humidity: builtins.float
+    @property
+    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
     def __init__(
         self,
         *,
+        sensor_id: builtins.int = ...,
         temperature: builtins.float = ...,
         humidity: builtins.float = ...,
+        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["humidity", b"humidity", "temperature", b"temperature"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["humidity", b"humidity", "sensor_id", b"sensor_id", "temperature", b"temperature", "timestamp", b"timestamp"]) -> None: ...
 
 global___MeteoData = MeteoData
 
@@ -37,12 +46,20 @@ class PollutionData(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     CO2_FIELD_NUMBER: builtins.int
+    SENSOR_ID_FIELD_NUMBER: builtins.int
+    TIMESTAMP_FIELD_NUMBER: builtins.int
     co2: builtins.float
+    sensor_id: builtins.int
+    @property
+    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
     def __init__(
         self,
         *,
         co2: builtins.float = ...,
+        sensor_id: builtins.int = ...,
+        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["co2", b"co2"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["co2", b"co2", "sensor_id", b"sensor_id", "timestamp", b"timestamp"]) -> None: ...
 
 global___PollutionData = PollutionData

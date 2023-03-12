@@ -1,15 +1,20 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 //python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./sensor.proto 
+//python -m grpc_tools.protoc --mypy_out=. --proto_path=. sensor.proto   
 
 message MeteoData {
-  float temperature = 1;
-  float humidity = 2;
-
+  int32 sensor_id = 1;
+  float temperature = 2;
+  float humidity = 3;
+  google.protobuf.Timestamp timestamp = 4;
 }
 
 message PollutionData {
   float co2 = 1;
+  int32 sensor_id = 2;
+  google.protobuf.Timestamp timestamp = 4;
 }
 
 service LoadBalancer {

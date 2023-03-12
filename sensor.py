@@ -9,7 +9,8 @@ import grpc
 from meteo_utils import MeteoDataDetector
 import sensor_pb2 as sensor_pb2
 import sensor_pb2_grpc as sensor_pb2_grpc
-
+from datetime import datetime
+import google.protobuf.timestamp_pb2 as timestamp_pb2
 
 class Sensor:
     def __init__(self, sensor_id, server_address):
@@ -21,15 +22,18 @@ class Sensor:
     def send_data(self):
         weather_data = MeteoDataDetector()
         meteo_data = weather_data.analyze_air()
+        
         info = sensor_pb2.MeteoData(
-            #sensor_id=self.sensor_id,
+            sensor_id=self.sensor_id,
             temperature = meteo_data['temperature'],
-            humidity = meteo_data['humidity']
+            humidity = meteo_data['humidity'],
+            timestamp = timestamp_pb2.Timestamp()
         )
         pollution_data = weather_data.analyze_pollution()
         info2 = sensor_pb2.PollutionData(
-            #sensor_id=self.sensor_id,
-            co2=pollution_data['co2']
+            sensor_id=self.sensor_id,
+            co2=pollution_data['co2'],
+            timestamp = timestamp_pb2.Timestamp()
         )
 
         print(f"Sending data from sensor {self.sensor_id}...")
