@@ -1,0 +1,23 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+//python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./server.proto
+//python -m grpc_tools.protoc --mypy_out=. --proto_path=. server.proto
+
+message ProcessedMeteoData {
+  int32 lb_id = 1;
+  float air_wellness=2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message ProcessedPollutionData {
+  float pollution_coefficient = 1;
+  int32 lb_id = 2;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+service LoadBalancer {
+  rpc ReceivedMeteoData (ProcessedMeteoData) returns (google.protobuf.Empty) {}
+  rpc ReceivedPollutionData (ProcessedPollutionData) returns (google.protobuf.Empty) {}
+}
+
