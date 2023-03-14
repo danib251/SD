@@ -4,10 +4,13 @@ import "google/protobuf/timestamp.proto";
 //python -m grpc_tools.protoc -I./ --python_out=. --grpc_python_out=. ./sensor.proto 
 //python -m grpc_tools.protoc --mypy_out=. --proto_path=. sensor.proto   
 
+message TempHumidity {
+  float temperature = 1;
+  float humidity = 2;
+}
 message MeteoData {
   int32 sensor_id = 1;
-  float temperature = 2;
-  float humidity = 3;
+  TempHumidity meteo_data = 2;
   google.protobuf.Timestamp timestamp = 4;
 }
 

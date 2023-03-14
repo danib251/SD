@@ -16,28 +16,44 @@ else:
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
+class TempHumidity(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    TEMPERATURE_FIELD_NUMBER: builtins.int
+    HUMIDITY_FIELD_NUMBER: builtins.int
+    temperature: builtins.float
+    humidity: builtins.float
+    def __init__(
+        self,
+        *,
+        temperature: builtins.float = ...,
+        humidity: builtins.float = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["humidity", b"humidity", "temperature", b"temperature"]) -> None: ...
+
+global___TempHumidity = TempHumidity
+
+@typing_extensions.final
 class MeteoData(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     SENSOR_ID_FIELD_NUMBER: builtins.int
-    TEMPERATURE_FIELD_NUMBER: builtins.int
-    HUMIDITY_FIELD_NUMBER: builtins.int
+    METEO_DATA_FIELD_NUMBER: builtins.int
     TIMESTAMP_FIELD_NUMBER: builtins.int
     sensor_id: builtins.int
-    temperature: builtins.float
-    humidity: builtins.float
+    @property
+    def meteo_data(self) -> global___TempHumidity: ...
     @property
     def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
     def __init__(
         self,
         *,
         sensor_id: builtins.int = ...,
-        temperature: builtins.float = ...,
-        humidity: builtins.float = ...,
+        meteo_data: global___TempHumidity | None = ...,
         timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["humidity", b"humidity", "sensor_id", b"sensor_id", "temperature", b"temperature", "timestamp", b"timestamp"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data", "timestamp", b"timestamp"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data", "sensor_id", b"sensor_id", "timestamp", b"timestamp"]) -> None: ...
 
 global___MeteoData = MeteoData
 

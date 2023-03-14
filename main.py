@@ -23,8 +23,3 @@ if __name__ == '__main__':
     
     pollution_data = processor.process_pollution_data(pollution_data)
     print(pollution_data)
-        
-
-    
-    
-    
