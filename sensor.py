@@ -11,6 +11,7 @@ import sensor_pb2 as sensor_pb2
 import sensor_pb2_grpc as sensor_pb2_grpc
 from datetime import datetime
 import google.protobuf.timestamp_pb2 as timestamp_pb2
+import google.protobuf
 
 class Sensor:
     def __init__(self, sensor_id, server_address):

@@ -5,6 +5,7 @@ from datetime import datetime
 from concurrent import futures
 
 import server_pb2_grpc
+import google.protobuf
 
 
 class StorageServer(server_pb2_grpc.ServerServicer):
@@ -15,18 +16,29 @@ class StorageServer(server_pb2_grpc.ServerServicer):
 
     def ReceivedMeteoData(self, request, context):
         # Choose a server in round-robin fashion
-        print("HEY")
+        server = self.servers[self.server_index]
+        self.server_index = (self.server_index + 1) % len(self.servers)
+        print("Got request " + str(request))
+        return google.protobuf.empty_pb2.Empty()
+
 
     def ReceivedPollutionData(self, request, context):
-        print("HEY")
+        # Choose a server in round-robin fashion
+        server = self.servers[self.server_index]
+        self.server_index = (self.server_index + 1) % len(self.servers)
+        print("Got request " + str(request))
+        return google.protobuf.empty_pb2.Empty()
+
+
 
 def server():
     # Create a gRPC server and add the LoadBalancerServicer
+    cont = 0
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
     server_pb2_grpc.add_ServerServicer_to_server(StorageServer(["Server1", "Server2"]), server)
 
     # Bind the server to a port and start it
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port('[::]:50052')
     print("gRPC server starting...")
     server.start()
 

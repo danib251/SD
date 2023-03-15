@@ -7,18 +7,23 @@ from google.protobuf import timestamp_pb2
 import meteo_utils
 import sensor_pb2
 import sensor_pb2_grpc
-import google.protobuf.empty_pb2
+import google.protobuf.timestamp_pb2 as timestamp_pb2
 from concurrent import futures
+import google.protobuf
 
 import server_pb2
+import server_pb2_grpc
 
 
 class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
     lb_id = 0
 
-    def __init__(self, servers):
+    def __init__(self, servers, server_address):
         self.servers = servers
+        self.server_address = server_address
         self.server_index = 0
+        self.channel = grpc.insecure_channel(self.server_address)
+        self.stub = server_pb2_grpc.ServerStub(self.channel)
         LoadBalancer.lb_id += 1
 
     def ProcessMeteoData(self, request, context):
@@ -66,7 +71,7 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
             timestamp=timestamp_pb2.Timestamp()
         )
         print(f"Sending data from LB {self.lb_id}...")
-        # self.stub.ReceivedPollutionData(info)
+        self.stub.ReceivedPollutionData(info)
 
         # Connect to server and process data
         print(f"Processing pollution data on server {server}")
@@ -74,9 +79,11 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
 
 
 def server():
+    cont = 0
     # Create a gRPC server and add the LoadBalancerServicer
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
-    sensor_pb2_grpc.add_LoadBalancerServicer_to_server(LoadBalancer(["Server1", "Server2"]), server)
+    sensor_pb2_grpc.add_LoadBalancerServicer_to_server(LoadBalancer(["Server1", "Server2"], 'localhost:50052'), server)
+    cont += 1
 
     # Bind the server to a port and start it
     server.add_insecure_port('[::]:50051')
