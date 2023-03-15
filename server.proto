@@ -16,7 +16,7 @@ message ProcessedPollutionData {
   google.protobuf.Timestamp timestamp = 4;
 }
 
-service LoadBalancer {
+service Server {
   rpc ReceivedMeteoData (ProcessedMeteoData) returns (google.protobuf.Empty) {}
   rpc ReceivedPollutionData (ProcessedPollutionData) returns (google.protobuf.Empty) {}
 }

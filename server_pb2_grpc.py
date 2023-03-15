@@ -6,7 +6,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import server_pb2 as server__pb2
 
 
-class LoadBalancerStub(object):
+class ServerStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -16,18 +16,18 @@ class LoadBalancerStub(object):
             channel: A grpc.Channel.
         """
         self.ReceivedMeteoData = channel.unary_unary(
-                '/LoadBalancer/ReceivedMeteoData',
+                '/Server/ReceivedMeteoData',
                 request_serializer=server__pb2.ProcessedMeteoData.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
         self.ReceivedPollutionData = channel.unary_unary(
-                '/LoadBalancer/ReceivedPollutionData',
+                '/Server/ReceivedPollutionData',
                 request_serializer=server__pb2.ProcessedPollutionData.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 )
 
 
-class LoadBalancerServicer(object):
+class ServerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def ReceivedMeteoData(self, request, context):
@@ -43,7 +43,7 @@ class LoadBalancerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_LoadBalancerServicer_to_server(servicer, server):
+def add_ServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'ReceivedMeteoData': grpc.unary_unary_rpc_method_handler(
                     servicer.ReceivedMeteoData,
@@ -57,12 +57,12 @@ def add_LoadBalancerServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'LoadBalancer', rpc_method_handlers)
+            'Server', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class LoadBalancer(object):
+class Server(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -76,7 +76,7 @@ class LoadBalancer(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/LoadBalancer/ReceivedMeteoData',
+        return grpc.experimental.unary_unary(request, target, '/Server/ReceivedMeteoData',
             server__pb2.ProcessedMeteoData.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,
@@ -93,7 +93,7 @@ class LoadBalancer(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/LoadBalancer/ReceivedPollutionData',
+        return grpc.experimental.unary_unary(request, target, '/Server/ReceivedPollutionData',
             server__pb2.ProcessedPollutionData.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options, channel_credentials,

@@ -2,17 +2,24 @@ import random
 import grpc
 import time
 
+from google.protobuf import timestamp_pb2
+
 import meteo_utils
 import sensor_pb2
 import sensor_pb2_grpc
 import google.protobuf.empty_pb2
 from concurrent import futures
 
+import server_pb2
+
 
 class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
+    lb_id = 0
+
     def __init__(self, servers):
         self.servers = servers
         self.server_index = 0
+        LoadBalancer.lb_id += 1
 
     def ProcessMeteoData(self, request, context):
         # Choose a server in round-robin fashion
@@ -24,12 +31,19 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
 
         # Calculates the air_wellness
         processor = meteo_utils.MeteoDataProcessor()
-        air_wellness = processor.process_meteo_data(request.meteo_data)
+        air_processed = processor.process_meteo_data(request.meteo_data)
 
         # Connect to server and sends data
         print(f"Processing meteo data on server {server}")
 
         # TODO Connect to server and send the processed data
+        info = server_pb2.ProcessedMeteoData(
+            lb_id=self.lb_id,
+            air_wellness=air_processed,
+            timestamp=timestamp_pb2.Timestamp()
+        )
+        print(f"Sending data from LB {self.lb_id}...")
+        # self.stub.ReceivedMeteoData(info)
 
         return google.protobuf.empty_pb2.Empty()
 
@@ -43,10 +57,16 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
 
         # Calculates the pollution coefficient
         processor = meteo_utils.MeteoDataProcessor()
-        pollution_coefficient = processor.process_pollution_data(request.co2)
-        print(pollution_coefficient)
+        pollution_processed = processor.process_pollution_data(request.co2)
 
         # TODO Connect to server and send the processed data
+        info = server_pb2.ProcessedPollutionData(
+            lb_id=self.lb_id,
+            pollution_coefficient=pollution_processed,
+            timestamp=timestamp_pb2.Timestamp()
+        )
+        print(f"Sending data from LB {self.lb_id}...")
+        # self.stub.ReceivedPollutionData(info)
 
         # Connect to server and process data
         print(f"Processing pollution data on server {server}")
