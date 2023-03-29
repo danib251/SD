@@ -11,7 +11,9 @@ import sensor_pb2 as sensor_pb2
 import sensor_pb2_grpc as sensor_pb2_grpc
 from datetime import datetime
 import google.protobuf.timestamp_pb2 as timestamp_pb2
-import google.protobuf
+import pika #pip install pika
+import json
+
 
 class Sensor:
     def __init__(self, sensor_id, server_address):
@@ -19,6 +21,9 @@ class Sensor:
         self.server_address = server_address
         self.channel = grpc.insecure_channel(self.server_address)
         self.stub = sensor_pb2_grpc.LoadBalancerStub(self.channel)
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        self.channel_rmq = self.connection.channel()
+        self.channel_rmq.queue_declare(queue='sensor_data')
 
     def send_data(self):
         weather_data = MeteoDataDetector()
@@ -32,6 +37,16 @@ class Sensor:
             ),
             timestamp=timestamp_pb2.Timestamp()
         )
+
+        sensor_data1 = {
+            'sensor_id': self.sensor_id,
+            'time': int(3),
+            'weather_data': {
+                'temperature': meteo_data['temperature'],
+                'humidity': meteo_data['humidity']
+            }
+        }
+
         pollution_data = weather_data.analyze_pollution()
         info2 = sensor_pb2.PollutionData(
             sensor_id=self.sensor_id,
@@ -39,48 +54,24 @@ class Sensor:
             timestamp=timestamp_pb2.Timestamp()
         )
 
-        print(f"Sending data from sensor {self.sensor_id}...")
-        self.stub.ProcessMeteoData(info)
-        self.stub.ProcessPollutionData(info2)
+        sensor_data2 = {
+            'sensor_id': self.sensor_id,
+            'time': int(3),
+            'co2': pollution_data['co2']
+        }
 
         
 
-"""
-class Sensor:
-    def __init__(self, sensor_id, sensor_type, lb_host, lb_port, sleep_time=10):
-        self.sensor_id = sensor_id
-        self.sensor_type = sensor_type
-        self.lb_host = lb_host
-        self.lb_port = lb_port
-        self.sleep_time = sleep_time
+        print(f"Sending data from sensor {self.sensor_id}...")
+        #self.stub.ProcessMeteoData(info)
+        #self.stub.ProcessPollutionData(info2)
+        message = json.dumps(sensor_data1).encode('utf-8')
+        message2 = json.dumps(sensor_data2).encode('utf-8')
+        self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message)
+        self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message2)                                
+        ##self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=info2.SerializeToString())
 
-    def start(self):
-        while True:
-            # Get raw data from the sensor
-            if self.sensor_type == 'meteo':
-                raw_data = meteo_utils.MeteoDataDetector().get_raw_meteo_data()
-            elif self.sensor_type == 'pollution':
-                raw_data = meteo_utils.PollutionDataDetector().get_raw_pollution_data()
-                
-            # Send the data to the load balancer
-            lb_client = LBClient(self.lb_host, self.lb_port)
-            lb_client.send_data(self.sensor_id, self.sensor_type, raw_data)
+        self.connection.close()
 
-            # Wait for some time before sending the next record
-            time.sleep(self.sleep_time)
-    
 
-    
-    En este código, la clase Sensor recibe los siguientes argumentos:
-
-sensor_id: ID único del sensor.
-sensor_type: Tipo de sensor ('meteo' o 'pollution').
-lb_host: Dirección IP o hostname del servidor del Load Balancer.
-lb_port: Puerto del servidor del Load Balancer.
-sleep_time: Tiempo de espera en segundos entre cada envío de datos.
-La clase tiene un método start que se ejecuta en un bucle infinito. En cada iteración, 
-se obtiene el raw data del sensor correspondiente usando la clase MeteoDataDetector o PollutionDataDetector de meteo_utils.
-A continuación, se envía el raw data al Load Balancer usando la clase LBClient, que aún no hemos definido. Por último, 
-se espera el tiempo definido en sleep_time antes de la siguiente iteración.
-
-    """
+        
