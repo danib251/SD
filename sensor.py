@@ -69,7 +69,7 @@ class Sensor:
         message = json.dumps(sensor_data1).encode('utf-8')
         message2 = json.dumps(sensor_data2).encode('utf-8')
         self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message)
-        self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message2)                                
+        #self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message2)                                
         ##self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=info2.SerializeToString())
 
         self.connection.close()

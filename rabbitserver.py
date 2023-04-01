@@ -16,11 +16,14 @@ def callback(ch, method, properties, body):
     if 'weather_data' in data:
         # Procesar datos del tipo 1
         weather_data = data['weather_data']
+        id = data['sensor_id']
+        time = data['time']
         # Calculates the air_wellness
         air_processed = processor.process_meteo_data(weather_data)
-        print("Datos del tipo 1 - Weather data:", air_processed)
+        #print("Datos del tipo 1 - Weather data:", air_processed)
         print(" [x] Received %r" % body)
-        redis_client.set("air_processed", json.dumps(air_processed))
+        redis_client.rpush('list', json.dumps({"data": air_processed, "id": id, "time": time}))
+
     elif 'co2' in data:
         # Procesar datos del tipo 2
         co2 = data['co2']
