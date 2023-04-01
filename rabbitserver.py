@@ -1,7 +1,10 @@
 import pika
 import json
 import meteo_utils
+import redis
 
+# Conexión a Redis
+redis_client = redis.Redis()
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 channel.queue_declare(queue='sensor_data')
@@ -9,26 +12,24 @@ channel.queue_declare(queue='sensor_data')
 
 def callback(ch, method, properties, body):
     data = json.loads(body)
+    processor = meteo_utils.MeteoDataProcessor()
     if 'weather_data' in data:
         # Procesar datos del tipo 1
         weather_data = data['weather_data']
         # Calculates the air_wellness
-        processor = meteo_utils.MeteoDataProcessor()
-        w = {
-                'temperature': 1,
-                'humidity': 2
-            }
-      
-        
-        air_processed = processor.process_meteo_data(w)
+        air_processed = processor.process_meteo_data(weather_data)
         print("Datos del tipo 1 - Weather data:", air_processed)
+        print(" [x] Received %r" % body)
+        redis_client.set("air_processed", json.dumps(air_processed))
     elif 'co2' in data:
         # Procesar datos del tipo 2
         co2 = data['co2']
         # Calculates the air_wellness
-        processor = meteo_utils.MeteoDataProcessor()
-        air_processed = processor.process_pollution_data(co2)
-        print("Datos del tipo 2 - Pollution data:", air_processed)
+        pollution_processed = processor.process_pollution_data(co2)
+        print("Datos del tipo 2 - Pollution data:", pollution_processed)
+        #print(" [x] Received %r" % body)
+        redis_client.set("pollution_processed", json.dumps(pollution_processed))
+
     else:
         print("Mensaje no identificado:", data)
 

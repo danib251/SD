@@ -40,7 +40,7 @@ class Sensor:
 
         sensor_data1 = {
             'sensor_id': self.sensor_id,
-            'time': int(3),
+            'time': int(time.time()),
             'weather_data': {
                 'temperature': meteo_data['temperature'],
                 'humidity': meteo_data['humidity']
@@ -56,10 +56,11 @@ class Sensor:
 
         sensor_data2 = {
             'sensor_id': self.sensor_id,
-            'time': int(3),
+            'time': int(time.time()),
             'co2': pollution_data['co2']
         }
-
+        
+        
         
 
         print(f"Sending data from sensor {self.sensor_id}...")
