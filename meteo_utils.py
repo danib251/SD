@@ -148,9 +148,8 @@ class MeteoDataProcessor:
         """
 
         # Get the wellness value of each parameter based on the processor's distributions.
-        temperature_wellness = _value_from_distribution(self.temperature_space, self.temperature_vals, meteo_data.
-                                                        temperature)
-        humidity_wellness = _value_from_distribution(self.humidity_space, self.humidity_vals, meteo_data.humidity)
+        temperature_wellness = _value_from_distribution(self.temperature_space, self.temperature_vals, meteo_data['temperature'])
+        humidity_wellness = _value_from_distribution(self.humidity_space, self.humidity_vals, meteo_data['humidity'])
 
         # Harmonic mean
         air_wellness = round(2 / (1 / temperature_wellness + 1 / humidity_wellness), 2)
