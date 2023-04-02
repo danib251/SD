@@ -8,18 +8,22 @@ class IData:
         pass
 
 class RedisData(IData):
-    def __init__(self, redis_host, redis_port):
+    def __init__(self, redis_host, redis_port, window_size):
         self.redis_client = redis.Redis(host=redis_host, port=redis_port, db=0)
-
+        self.window_size = window_size
     def process_data(self):
-        if self.redis_client.llen('list') > 0:
-            # Obtener el primer elemento de la lista
-            first_element = self.redis_client.lpop('list')
-            
-            # Decodificar datos JSON
-            air_data = json.loads(first_element)
-            
-            print("air_data:", air_data)
+        list_elements = self.redis_client.lrange('list', 0, self.window_size - 1)
+        if len(list_elements) > 0:
+            # Decodificar datos JSON y guardar en una lista
+            air_data_list = [json.loads(element) for element in list_elements]
+
+            # Eliminar elementos de la lista en Redis
+            self.redis_client.ltrim('list', len(list_elements), -1)
+
+            # Procesar datos
+            for air_data in air_data_list:
+                print("air_data:", air_data)
+            print ("la media es: ", len(air_data_list))
         
 class RedisDataProxy(IData):
     def __init__(self, redis_data):
@@ -37,7 +41,8 @@ class RabbitMQ:
 
     def publish_data(self, data):
         # Publicar datos en RabbitMQ
-        self.channel.basic_publish(exchange='', routing_key='sensor_data', body=data)
+        #self.channel.basic_publish(exchange='', routing_key='sensor_data', body=data)
+        pass
 
 class RedisDataProxyWithRabbitMQ(IData):
     def __init__(self, redis_data, rabbitmq):
@@ -51,7 +56,8 @@ class RedisDataProxyWithRabbitMQ(IData):
         self.rabbitmq.publish_data(json.dumps(air_data))
 
 def main():
-    redis_data = RedisData('localhost', 6379)
+    window_size = 10  # Tamaño de la ventana
+    redis_data = RedisData('localhost', 6379, window_size)
     redis_data_proxy = RedisDataProxy(redis_data)
     rabbitmq = RabbitMQ('localhost', 5672)
     redis_data_proxy_with_rabbitmq = RedisDataProxyWithRabbitMQ(redis_data, rabbitmq)
@@ -59,7 +65,7 @@ def main():
     while True:
         redis_data_proxy.process_data()
         redis_data_proxy_with_rabbitmq.process_data()
-        time.sleep(1)
+        time.sleep(10)
 
 if __name__ == '__main__':
     main()
