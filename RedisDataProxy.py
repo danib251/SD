@@ -24,25 +24,26 @@ class RedisData(IData):
             for air_data in air_data_list:
                 print("air_data:", air_data)
             print ("la media es: ", len(air_data_list))
-        
-class RedisDataProxy(IData):
-    def __init__(self, redis_data):
-        self.redis_data = redis_data
 
-    def process_data(self):
-        print("\r%s" % "procesando datos", end="")
-        self.redis_data.process_data()
+            # Enviar resultados a RabbitMQ
+            air_data_dict = {"data": air_data['data'], "id": air_data['id'], "time": time.time()}
+            queue_name = min(self.rabbitmq.queue_names, key=lambda x: self.rabbitmq.channel.queue_declare(queue=x, passive=True).method.message_count)
+            print("queue_name:", queue_name)
+            self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
+
 
 class RabbitMQ:
-    def __init__(self, rabbitmq_host, rabbitmq_port):
+    def __init__(self, rabbitmq_host, rabbitmq_port, queue_names):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host))
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='sensor_data')
+        self.queue_names = queue_names
+        for queue_name in queue_names:
+            self.channel.queue_declare(queue=queue_name)
 
-    def publish_data(self, data):
+    def publish_data(self, queue_name, data):
         # Publicar datos en RabbitMQ
-        #self.channel.basic_publish(exchange='', routing_key='sensor_data', body=data)
-        pass
+        self.channel.basic_publish(exchange='', routing_key=queue_name, body=data)
+
 
 class RedisDataProxyWithRabbitMQ(IData):
     def __init__(self, redis_data, rabbitmq):
@@ -51,19 +52,17 @@ class RedisDataProxyWithRabbitMQ(IData):
 
     def process_data(self):
         self.redis_data.process_data()
-        air_data = {"data": "air_processed", "id": "1", "time": time.time()}
-        # Enviar resultados a RabbitMQ
-        self.rabbitmq.publish_data(json.dumps(air_data))
+
 
 def main():
     window_size = 10  # Tamaño de la ventana
     redis_data = RedisData('localhost', 6379, window_size)
-    redis_data_proxy = RedisDataProxy(redis_data)
-    rabbitmq = RabbitMQ('localhost', 5672)
+    rabbitmq_queue_names = ['sensor_data_1', 'sensor_data_2', 'sensor_data_3']
+    rabbitmq = RabbitMQ('localhost', 5672, rabbitmq_queue_names)
+    redis_data.rabbitmq = rabbitmq  # asignar objeto rabbitmq a redis_data
     redis_data_proxy_with_rabbitmq = RedisDataProxyWithRabbitMQ(redis_data, rabbitmq)
 
     while True:
-        redis_data_proxy.process_data()
         redis_data_proxy_with_rabbitmq.process_data()
         time.sleep(10)
 
