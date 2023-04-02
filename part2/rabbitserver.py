@@ -1,8 +1,12 @@
 import pika
 import json
-import meteo_utils
 import redis
+import os
+import sys
 
+utils_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'utils')
+sys.path.append(utils_dir)
+import meteo_utils
 # Conexión a Redis
 redis_client = redis.Redis()
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
