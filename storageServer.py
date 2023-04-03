@@ -13,12 +13,15 @@ class StorageServer(server_pb2_grpc.ServerServicer):
         self.servers = servers
         self.server_index = 0
         self.sensor_id = 0
+        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
     def ReceivedMeteoData(self, request, context):
         # Choose a server in round-robin fashion
         server = self.servers[self.server_index]
         self.server_index = (self.server_index + 1) % len(self.servers)
         print("Got request " + str(request))
+        data = {"lb_id": request.lb_id, "air_wellness": request.air_wellness}
+        self.redis_client.hmset("meteo_data", {str(datetime.now()): json.dumps(data)})
         return google.protobuf.empty_pb2.Empty()
 
 
@@ -27,6 +30,8 @@ class StorageServer(server_pb2_grpc.ServerServicer):
         server = self.servers[self.server_index]
         self.server_index = (self.server_index + 1) % len(self.servers)
         print("Got request " + str(request))
+        data = {"lb_id": request.lb_id, "pollution_coefficient": request.pollution_coefficient}
+        self.redis_client.hmset("pollution_data", {str(datetime.now()): json.dumps(data)})
         return google.protobuf.empty_pb2.Empty()
 
 
