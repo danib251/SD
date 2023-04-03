@@ -16,6 +16,7 @@ import server_pb2_grpc
 
 
 class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
+    # TODO lb_id increment
     lb_id = 0
 
     def __init__(self, servers, server_address):
@@ -24,7 +25,6 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         self.server_index = 0
         self.channel = grpc.insecure_channel(self.server_address)
         self.stub = server_pb2_grpc.ServerStub(self.channel)
-        LoadBalancer.lb_id += 1
 
     def ProcessMeteoData(self, request, context):
         # Choose a server in round-robin fashion
@@ -41,7 +41,6 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         # Connect to server and sends data
         print(f"Processing meteo data on server {server}")
 
-        # TODO Connect to server and send the processed data
         info = server_pb2.ProcessedMeteoData(
             lb_id=self.lb_id,
             air_wellness=air_processed,
@@ -64,7 +63,6 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         processor = meteo_utils.MeteoDataProcessor()
         pollution_processed = processor.process_pollution_data(request.co2)
 
-        # TODO Connect to server and send the processed data
         info = server_pb2.ProcessedPollutionData(
             lb_id=self.lb_id,
             pollution_coefficient=pollution_processed,
