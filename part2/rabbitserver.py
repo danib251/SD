@@ -3,6 +3,12 @@ import json
 import redis
 import os
 import sys
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("queue", help="Nombre de la cola a la que se suscribirá el consumidor")
+args = parser.parse_args()
+print("Suscribiendo consumidor a la cola:", args.queue)
 
 utils_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'utils')
 sys.path.append(utils_dir)
@@ -11,7 +17,7 @@ import meteo_utils
 redis_client = redis.Redis()
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
-channel.queue_declare(queue='sensor_data')
+channel.queue_declare(queue=args.queue)
 
 
 def callback(ch, method, properties, body):
@@ -40,7 +46,7 @@ def callback(ch, method, properties, body):
     else:
         print("Mensaje no identificado:", data)
 
-channel.basic_consume(queue='sensor_data', on_message_callback=callback, auto_ack=True)
+channel.basic_consume(queue=args.queue, on_message_callback=callback, auto_ack=True)
 
 print("Starting Consuming")
 channel.start_consuming()
