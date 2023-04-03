@@ -47,7 +47,7 @@ class Sensor:
         self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message)
         #self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message2)                                
 
-        self.connection.close()
+        
 
 
         
