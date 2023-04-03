@@ -3,9 +3,9 @@ from sensor import Sensor
 import os
 
 # Solicitar la cantidad de sensores que el usuario desea ejecutar
-num_sensores = int(input("Ingrese la cantidad de sensores que desea ejecutar: "))
+num_sensores = int(input("Ingrese la cantidad de sensores que desea ejecutar: ")) #un 2 per exemple
 # Solicitar la cantidad de terminales que el usuario desea ejecutar
-num_terminales = int(input("Ingrese la cantidad de terminales que desea ejecutar: "))
+num_terminales = int(input("Ingrese la cantidad de terminales que desea ejecutar: ")) # un 3 per exemple necesites tot lo del redis
 
 # Ejecutar los archivos "sensor.py" y "rabbitserver.py"
 
