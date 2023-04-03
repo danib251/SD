@@ -3,6 +3,7 @@ import pika
 import json
 import time
 import sys
+import statistics
 
 class IData:
     def process_data(self):
@@ -15,6 +16,8 @@ class RedisData(IData):
     def process_data(self):
         air_data_list = []
         co2_data_list = []
+        air_data_mean = -1
+        co2_data_mean = -1
         list_elements = self.redis_client.lrange('list', 0, self.window_size - 1)
         if len(list_elements) > 0:
             # Decodificar datos JSON y guardar en una lista
@@ -25,15 +28,30 @@ class RedisData(IData):
 
             for data in data_list:
                 if 'air_wellness' in data:
-                    air_data_dict = {"data": data['air_wellness'], "id": data['id'], "time": data['time']}
+                    air_data_dict = {"air_wellness": data['air_wellness'], "id": data['id'], "time": data['time']}
                     air_data_list.append(air_data_dict)
                 elif 'co2_wellness' in data:
-                    co2_data_dict = {"data": data['co2_wellness'], "id": data['id'], "time": data['time']}
+                    co2_data_dict = {"co2_wellness": data['co2_wellness'], "id": data['id'], "time": data['time']}
                     co2_data_list.append(co2_data_dict)
+            if 'air_wellness' in data:
+                air_data_mean = statistics.mean([data['air_wellness'] for data in air_data_list])
+            elif 'co2_wellness' in data:
+                co2_data_mean = statistics.mean([data['co2_wellness'] for data in co2_data_list])
+            first_time = data_list[0]['time']
+
             print("\rDatos de aire:", air_data_list)
             print("\rDatos de CO2:", co2_data_list)
+
+            queue_name = min(self.rabbitmq.queue_names, key=lambda x: self.rabbitmq.channel.queue_declare(queue=x, passive=True).method.message_count)
+            print("queue_name:", queue_name)
+            #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
+            #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
+            self.rabbitmq.publish_data(queue_name, json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
+
+
         else:
             print("\rNo hay datos en Redis")
+
 
 class RabbitMQ:
     def __init__(self, rabbitmq_host, rabbitmq_port, queue_names):
