@@ -13,24 +13,25 @@ class RedisData(IData):
         self.redis_client = redis.Redis(host=redis_host, port=redis_port, db=0)
         self.window_size = window_size
     def process_data(self):
+        air_data_list = []
+        co2_data_list = []
         list_elements = self.redis_client.lrange('list', 0, self.window_size - 1)
         if len(list_elements) > 0:
             # Decodificar datos JSON y guardar en una lista
-            air_data_list = [json.loads(element) for element in list_elements]
+            data_list = [json.loads(element) for element in list_elements]
 
             # Eliminar elementos de la lista en Redis
             self.redis_client.ltrim('list', len(list_elements), -1)
 
-            # Procesar datos
-            for air_data in air_data_list:
-                print("air_data:", air_data)
-            print ("la media es: ", len(air_data_list))
-
-            # Enviar resultados a RabbitMQ
-            air_data_dict = {"data": air_data['data'], "id": air_data['id'], "time": time.time()}
-            queue_name = min(self.rabbitmq.queue_names, key=lambda x: self.rabbitmq.channel.queue_declare(queue=x, passive=True).method.message_count)
-            print("queue_name:", queue_name)
-            self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
+            for data in data_list:
+                if 'air_wellness' in data:
+                    air_data_dict = {"data": data['air_wellness'], "id": data['id'], "time": data['time']}
+                    air_data_list.append(air_data_dict)
+                elif 'co2_wellness' in data:
+                    co2_data_dict = {"data": data['co2_wellness'], "id": data['id'], "time": data['time']}
+                    co2_data_list.append(co2_data_dict)
+            print("\rDatos de aire:", air_data_list)
+            print("\rDatos de CO2:", co2_data_list)
         else:
             print("\rNo hay datos en Redis")
 

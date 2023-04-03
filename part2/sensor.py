@@ -22,30 +22,29 @@ class Sensor:
         self.channel_rmq.queue_declare(queue='sensor_data')
 
     def send_data(self):
-        
-        meteo_data = weather_data.analyze_air()
-        sensor_data1 = {
-            'sensor_id': self.sensor_id,
-            'time': int(time.time()),
-            'weather_data': {
-                'temperature': meteo_data['temperature'],
-                'humidity': meteo_data['humidity']
+        sensor_data = {}
+        if self.sensor_id % 2 == 0:  # si el id del sensor es par
+            meteo_data = weather_data.analyze_air()
+            sensor_data = {
+                'sensor_id': self.sensor_id,
+                'time': int(time.time()),
+                'weather_data': {
+                    'temperature': meteo_data['temperature'],
+                    'humidity': meteo_data['humidity']
+                }
             }
-        }
-
-        pollution_data = weather_data.analyze_pollution()
-        sensor_data2 = {
-            'sensor_id': self.sensor_id,
-            'time': int(time.time()),
-            'co2': pollution_data['co2']
-        }
+        else:  # si el id del sensor es impar
+            pollution_data = weather_data.analyze_pollution()
+            sensor_data = {
+                'sensor_id': self.sensor_id,
+                'time': int(time.time()),
+                'co2': pollution_data['co2']
+            }
 
         print(f"Sending data from sensor {self.sensor_id}...")
-
-        message = json.dumps(sensor_data1).encode('utf-8')
-        message2 = json.dumps(sensor_data2).encode('utf-8')
-        self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message)
-        #self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message2)                                
+        print(sensor_data)
+        message = json.dumps(sensor_data).encode('utf-8')
+        self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message)                          
 
         
 
