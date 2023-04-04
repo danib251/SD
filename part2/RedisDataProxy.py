@@ -48,8 +48,8 @@ class RedisData(IData):
             #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
             #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
             #self.rabbitmq.publish_data(queue_name, json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
-            self.rabbitmq.basic_publish(exchange='logs', routing_key='', body=json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
-
+            #self.rabbitmq.publish_data(exchange='logs', routing_key='', body=json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
+            self.rabbitmq.publish_data(json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False),exchange='logs')
         else:
             print("\rNo hay datos en Redis")
 
@@ -60,7 +60,12 @@ class RabbitMQ:
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
         
-
+    def publish_data(self, message, exchange='', routing_key=''):
+        self.channel.basic_publish(
+            exchange=exchange,
+            routing_key=routing_key,
+            body=message
+    )
 
 class RedisDataProxyWithRabbitMQ(IData):
     def __init__(self, redis_data, rabbitmq):
