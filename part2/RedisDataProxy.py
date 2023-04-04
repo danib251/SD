@@ -42,29 +42,30 @@ class RedisData(IData):
             print("\rDatos de aire:", air_data_list)
             print("\rDatos de CO2:", co2_data_list)
 
-            queue_name = min(self.rabbitmq.queue_names, key=lambda x: self.rabbitmq.channel.queue_declare(queue=x, passive=True).method.message_count)
-            print("queue_name:", queue_name)
+            
+
+            # obtener la lista de consumidores
             #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
             #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
-            self.rabbitmq.publish_data(queue_name, json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
-
-
+            #self.rabbitmq.publish_data(queue_name, json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
+            #self.rabbitmq.publish_data(exchange='logs', routing_key='', body=json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
+            self.rabbitmq.publish_data(json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False),exchange='logs')
         else:
             print("\rNo hay datos en Redis")
 
 
 class RabbitMQ:
-    def __init__(self, rabbitmq_host, rabbitmq_port, queue_names):
+    def __init__(self, rabbitmq_host):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host))
         self.channel = self.connection.channel()
-        self.queue_names = queue_names
-        for queue_name in queue_names:
-            self.channel.queue_declare(queue=queue_name)
-
-    def publish_data(self, queue_name, data):
-        # Publicar datos en RabbitMQ
-        self.channel.basic_publish(exchange='', routing_key=queue_name, body=data)
-
+        self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
+        
+    def publish_data(self, message, exchange='', routing_key=''):
+        self.channel.basic_publish(
+            exchange=exchange,
+            routing_key=routing_key,
+            body=message
+    )
 
 class RedisDataProxyWithRabbitMQ(IData):
     def __init__(self, redis_data, rabbitmq):
@@ -79,17 +80,16 @@ def main():
     num_queues = int(sys.argv[1])
 
     # Crear una lista de nombres de colas dinámicamente
-    rabbitmq_queue_names = [f'sensor_data_{i}' for i in range(1, num_queues+1)]
-    print ("rabbitmq_queue_names:", rabbitmq_queue_names)
+    
     window_size = 10  # Tamaño de la ventana
     redis_data = RedisData('localhost', 6379, window_size)
-    rabbitmq = RabbitMQ('localhost', 5672, rabbitmq_queue_names)
+    rabbitmq = RabbitMQ('localhost')
     redis_data.rabbitmq = rabbitmq  # asignar objeto rabbitmq a redis_data
     redis_data_proxy_with_rabbitmq = RedisDataProxyWithRabbitMQ(redis_data, rabbitmq)
 
     while True:
         redis_data_proxy_with_rabbitmq.process_data()
-        time.sleep(10)
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
