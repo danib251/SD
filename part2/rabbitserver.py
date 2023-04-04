@@ -15,6 +15,7 @@ sys.path.append(utils_dir)
 import meteo_utils
 # Conexión a Redis
 redis_client = redis.Redis()
+# Conexión a RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 channel.queue_declare(queue=args.queue)
