@@ -3,9 +3,14 @@ import pika
 import signal
 import matplotlib.pyplot as plt
 from rich.console import Console
+from flask import Flask
+
+from multiprocessing import Process, Queue
+
+app = Flask(__name__)
 
 class RabbitMQSubscriber:
-    def __init__(self, host, port):
+    def __init__(self, host, port, queue):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host, port))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
@@ -21,9 +26,8 @@ class RabbitMQSubscriber:
         self.y_data = []
         self.console = Console()
         self.values = []
-        self.data = [] # Agrega esta línea
-        
-
+        self.data = []
+        self.queue = queue
 
     def subscribe(self):
         self.channel.start_consuming()
@@ -38,26 +42,8 @@ class RabbitMQSubscriber:
         self.values.append(data['air_data_mean'])
         mean = self.get_mean()
         stddev = self.get_stddev()
-        response = app.response_class(
-            response='El valor medio es {} y la desviación estándar es {}'.format(mean, stddev),
-            status=200,
-            mimetype='text/plain'
-        )   
+        self.queue.put({'mean': mean, 'stddev': stddev})
 
-        # Asignar la respuesta HTTP a la vista correspondiente
-        app.view_functions['mean'] = response
-
-        '''self.x_data.append(data["air_data_mean"])
-        self.y_data.append(data["co2_data_mean"])
-        print("Generando gráfica...")
-        plt.plot(subscriber.x_data, subscriber.y_data)
-        plt.show()
-        ------------------------------------------------------------------------------------------------
-        self.console.print("[green]Mensaje recibido:[/green]")
-        with self.console.status("[bold green]Procesando datos...[/bold green]"):
-            self.console.print(f"Valor de X: [bold]{data['air_data_mean']}[/bold]")
-            self.console.print(f"Valor de Y: [bold]{data['co2_data_mean']}[/bold]")
-        self.values.append(data['air_data_mean'])'''
     def get_mean(self):
         if len(self.values) > 0:
             return sum(self.values) / len(self.values)
@@ -76,36 +62,23 @@ def sigint_handler(signal, frame):
     subscriber.disconnect()
     exit(0)
 
-
-
-subscriber = RabbitMQSubscriber('localhost', 5672)
-#signal.signal(signal.SIGINT, sigint_handler)
-
-from flask import Flask
-
-app = Flask(__name__)
-
-@app.route('/mean')
-def mean():
-    return 'El valor medio es 10'
-
-@app.route('/stddev')
+@app.route('/main')
 def stddev():
-    return 'La desviación estándar es 2'
-
-@app.route('/')
-def index():
-    return "Valor medio: {:.2f}\nDesviación estándar: {:.2f}".format(subscriber.get_mean(), subscriber.get_stddev())
-
-
+    while True:
+        try:
+            data = q.get(block=False)
+            mean = data['mean']
+            stddev = data['stddev']
+            return 'El valor medio es {} y la desviación estándar es {}'.format(mean, stddev)
+        except:
+            return 'No hay suficientes datos para calcular la desviación estándar'
 
 if __name__ == '__main__':
-    app.run(threaded=True)
-    subscriber = RabbitMQSubscriber('localhost', 5672)
-    subscriber.subscribe()
-    
-  
-  
-
-
-
+    q = Queue()
+    subscriber = RabbitMQSubscriber('localhost', 5672, q)
+    subscriber_process = Process(target=subscriber.subscribe)
+    subscriber_process.start()
+    app_process = Process(target=app.run)
+    app_process.start()
+    subscriber_process.join()
+    app_process.join()
