@@ -1,16 +1,9 @@
 import json
 import pika
-import signal
-import matplotlib.pyplot as plt
-from rich.console import Console
-from flask import Flask
-
-from multiprocessing import Process, Queue
-
-app = Flask(__name__)
+import requests
 
 class RabbitMQSubscriber:
-    def __init__(self, host, port, queue):
+    def __init__(self, host, port):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host, port))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
@@ -22,14 +15,10 @@ class RabbitMQSubscriber:
             on_message_callback=self.callback,
             auto_ack=True
         )
-        self.x_data = []
-        self.y_data = []
-        self.console = Console()
         self.values = []
         self.data = []
-        self.queue = queue
 
-    def subscribe(self):
+    def start_subscriber(self):
         self.channel.start_consuming()
 
     def disconnect(self):
@@ -38,11 +27,16 @@ class RabbitMQSubscriber:
 
     def callback(self, ch, method, properties, body):
         data = json.loads(body)
-        print("Mensaje recibido:", data)
-        self.values.append(data['air_data_mean'])
         mean = self.get_mean()
         stddev = self.get_stddev()
-        self.queue.put({'mean': mean, 'stddev': stddev})
+        self.data.append({'mean': mean, 'stddev': stddev})
+
+        # Enviar respuesta por HTTP
+        response = requests.post('http://example.com', json=data)
+        if response.status_code == 200:
+            print('La respuesta fue enviada exitosamente')
+        else:
+            print(f'Hubo un error al enviar la respuesta: {response.status_code}')
 
     def get_mean(self):
         if len(self.values) > 0:
@@ -56,29 +50,8 @@ class RabbitMQSubscriber:
             return (sum((x - mean) ** 2 for x in self.values) / len(self.values)) ** 0.5
         else:
             return None
-
-def sigint_handler(signal, frame):
-    print('Desconectando...')
-    subscriber.disconnect()
-    exit(0)
-
-@app.route('/main')
-def stddev():
-    while True:
-        try:
-            data = q.get(block=False)
-            mean = data['mean']
-            stddev = data['stddev']
-            return 'El valor medio es {} y la desviación estándar es {}'.format(mean, stddev)
-        except:
-            return 'No hay suficientes datos para calcular la desviación estándar'
-
-if __name__ == '__main__':
-    q = Queue()
-    subscriber = RabbitMQSubscriber('localhost', 5672, q)
-    subscriber_process = Process(target=subscriber.subscribe)
-    subscriber_process.start()
-    app_process = Process(target=app.run)
-    app_process.start()
-    subscriber_process.join()
-    app_process.join()
+        
+    def get_data(self):
+        return self.data
+subscriber = RabbitMQSubscriber('localhost', 5672)
+subscriber.start_subscriber()
