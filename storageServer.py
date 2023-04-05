@@ -21,9 +21,8 @@ class StorageServer(server_pb2_grpc.ServerServicer):
         self.server_index = (self.server_index + 1) % len(self.servers)
         print("Got request " + str(request))
         data = {"lb_id": request.lb_id, "air_wellness": request.air_wellness}
-        self.redis_client.hmset("meteo_data", {str(datetime.now()): json.dumps(data)})
+        self.redis_client.hset("meteo_data", str(datetime.now()), json.dumps(data))
         return google.protobuf.empty_pb2.Empty()
-
 
     def ReceivedPollutionData(self, request, context):
         # Choose a server in round-robin fashion
@@ -31,9 +30,8 @@ class StorageServer(server_pb2_grpc.ServerServicer):
         self.server_index = (self.server_index + 1) % len(self.servers)
         print("Got request " + str(request))
         data = {"lb_id": request.lb_id, "pollution_coefficient": request.pollution_coefficient}
-        self.redis_client.hmset("pollution_data", {str(datetime.now()): json.dumps(data)})
+        self.redis_client.hset("pollution_data", str(datetime.now()), json.dumps(data))
         return google.protobuf.empty_pb2.Empty()
-
 
 
 def server():

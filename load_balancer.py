@@ -31,6 +31,8 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         server = self.servers[self.server_index]
         self.server_index = (self.server_index + 1) % len(self.servers)
 
+        LoadBalancer.lb_id += 1
+
         # Content of the request
         print("Got request " + str(request))
 
@@ -47,7 +49,7 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
             timestamp=timestamp_pb2.Timestamp()
         )
         print(f"Sending data from LB {self.lb_id}...")
-        # self.stub.ReceivedMeteoData(info)
+        self.stub.ReceivedMeteoData(info)
 
         return google.protobuf.empty_pb2.Empty()
 
@@ -55,6 +57,8 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         # Choose a server in round-robin fashion
         server = self.servers[self.server_index]
         self.server_index = (self.server_index + 1) % len(self.servers)
+
+        LoadBalancer.lb_id += 1
 
         # Content of the request
         print("Got request " + str(request))
