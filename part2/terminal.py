@@ -1,9 +1,10 @@
 import pika
 import json
 import time
-import requests
+from flask import request, Flask
 import threading
 import queue
+
 
 class RabbitMQConsumer:
     def __init__(self, rabbitmq_host, exchange='', routing_key=''):
@@ -14,30 +15,38 @@ class RabbitMQConsumer:
         self.channel.queue_bind(exchange=exchange, queue=self.queue, routing_key=routing_key)
         self.channel.basic_consume(queue=self.queue, on_message_callback=self.handle_message, auto_ack=True)
         self.data = queue.Queue()
-        self.url = 'http://localhost:8000/data/'
 
     def handle_message(self, channel, method, properties, body):
         message = json.loads(body)
-        print(message)
         self.data.put(message)
+        
 
     def start_consuming(self):
-        print("Consumiendo datos de RabbitMQ")
         self.channel.start_consuming()
 
     def save_data_locally(self):
         while True:
-            print("Consumiendo hilooo")
-            try:
-                data = self.data.get(timeout=1)
-                requests.post(self.url, data=json.dumps(data))
-            except queue.Empty:
-                pass
+             if not consumer.data.empty():
+                data = consumer.data.get()
+                with app.app_context():
+                    receive_data(data)
+        time.sleep(1)
+
+
+app = Flask(__name__)
 
 consumer = RabbitMQConsumer('localhost', exchange='logs')
 
 consumer_thr = threading.Thread(target=consumer.start_consuming)
-consumer_thread = threading.Thread(target=consumer.save_data_locally)
-
+save_data_thr = threading.Thread(target=consumer.save_data_locally, args=(app,))
 consumer_thr.start()
-consumer_thread.start()
+save_data_thr.start()
+
+@app.route('/data')
+def receive_data():
+    data = consumer.data.get()
+    # haz lo que quieras con los datos recibidos
+    return 'OK, recibido dato: {}'.format(data)
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8000)
