@@ -1,57 +1,43 @@
-import json
 import pika
+import json
+import time
 import requests
+import threading
+import queue
 
-class RabbitMQSubscriber:
-    def __init__(self, host, port):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host, port))
+class RabbitMQConsumer:
+    def __init__(self, rabbitmq_host, exchange='', routing_key=''):
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host))
         self.channel = self.connection.channel()
-        self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
-        result = self.channel.queue_declare(queue='', exclusive=True)
-        self.queue_name = result.method.queue
-        self.channel.queue_bind(exchange='logs', queue=self.queue_name)
-        self.channel.basic_consume(
-            queue=self.queue_name,
-            on_message_callback=self.callback,
-            auto_ack=True
-        )
-        self.values = []
-        self.data = []
+        self.channel.exchange_declare(exchange=exchange, exchange_type='fanout')
+        self.queue = self.channel.queue_declare(queue='', exclusive=True).method.queue
+        self.channel.queue_bind(exchange=exchange, queue=self.queue, routing_key=routing_key)
+        self.channel.basic_consume(queue=self.queue, on_message_callback=self.handle_message, auto_ack=True)
+        self.data = queue.Queue()
+        self.url = 'http://localhost:8000/data/'
 
-    def start_subscriber(self):
+    def handle_message(self, channel, method, properties, body):
+        message = json.loads(body)
+        print(message)
+        self.data.put(message)
+
+    def start_consuming(self):
+        print("Consumiendo datos de RabbitMQ")
         self.channel.start_consuming()
 
-    def disconnect(self):
-        if self.connection is not None:
-            self.connection.close()
+    def save_data_locally(self):
+        while True:
+            print("Consumiendo hilooo")
+            try:
+                data = self.data.get(timeout=1)
+                requests.post(self.url, data=json.dumps(data))
+            except queue.Empty:
+                pass
 
-    def callback(self, ch, method, properties, body):
-        data = json.loads(body)
-        mean = self.get_mean()
-        stddev = self.get_stddev()
-        self.data.append({'mean': mean, 'stddev': stddev})
+consumer = RabbitMQConsumer('localhost', exchange='logs')
 
-        # Enviar respuesta por HTTP
-        response = requests.post('http://example.com', json=data)
-        if response.status_code == 200:
-            print('La respuesta fue enviada exitosamente')
-        else:
-            print(f'Hubo un error al enviar la respuesta: {response.status_code}')
+consumer_thr = threading.Thread(target=consumer.start_consuming)
+consumer_thread = threading.Thread(target=consumer.save_data_locally)
 
-    def get_mean(self):
-        if len(self.values) > 0:
-            return sum(self.values) / len(self.values)
-        else:
-            return None
-
-    def get_stddev(self):
-        if len(self.values) > 0:
-            mean = self.get_mean()
-            return (sum((x - mean) ** 2 for x in self.values) / len(self.values)) ** 0.5
-        else:
-            return None
-        
-    def get_data(self):
-        return self.data
-subscriber = RabbitMQSubscriber('localhost', 5672)
-subscriber.start_subscriber()
+consumer_thr.start()
+consumer_thread.start()

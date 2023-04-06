@@ -89,7 +89,7 @@ def main():
 
     while True:
         redis_data_proxy_with_rabbitmq.process_data()
-        time.sleep(1)
+        time.sleep(3)
 
 if __name__ == '__main__':
     main()

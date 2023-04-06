@@ -18,7 +18,7 @@ if os.name == 'nt':  # Windows
     os.system(f'start cmd.exe /c "python RedisDataProxy.py {num_terminales}"')
     for i in range(num_terminales):
         queue_name = data_sensor + str(i+1)
-        os.system(f'start cmd.exe /c "python terminal.py"')
+        #os.system(f'start cmd.exe /c "python terminal.py"')
 elif os.name == 'posix':  # Linux o macOS
     current_dir = os.getcwd()
 
@@ -38,6 +38,6 @@ while True:
 
     for sensor in sensors:
         sensor.send_data() 
-    
+        time.sleep(1)    
 
     
