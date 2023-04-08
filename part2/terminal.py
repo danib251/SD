@@ -1,10 +1,8 @@
 import pika
 import json
-import time
-from flask import Flask
-import threading
 import queue
-
+import threading
+from graphic import Graphic
 
 class RabbitMQConsumer:
     def __init__(self, rabbitmq_host, exchange, routing_key=''):
@@ -27,32 +25,18 @@ class RabbitMQConsumer:
     def start_consuming(self):
         self.channel.start_consuming()
 
-    def save_data_locally(self):
-        while True:
-            if not consumer.data.empty():
-                data = consumer.data.get()
-                with app.app_context():
-                    receive_data(data)
-            time.sleep(1)
 
-
-app = Flask(__name__)
 
 consumer = RabbitMQConsumer('localhost', exchange='logs')
 
 consumer_thr = threading.Thread(target=consumer.start_consuming)
-save_data_thr = threading.Thread(target=consumer.save_data_locally, args=(app,))
+
 consumer_thr.start()
-save_data_thr.start()
 
-@app.route('/data')
-def receive_data():
-    data = consumer.data.get()
-    # haz lo que quieras con los datos recibidos
-    return 'OK, recibido dato: {}'.format(data)
+print("Consumer started")
+graphic = Graphic(consumer.data)
+graphic.process_data()
 
-if __name__ == '__main__':
-    app.run(debug=True, port=8000)
 
 
 
