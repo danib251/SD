@@ -15,7 +15,7 @@ queue_name = data_sensor + str(num_terminales)
 
 if os.name == 'nt':  # Windows
     os.system(f'start cmd.exe /c "python rabbitserver.py {"sensor_data"}"')
-    os.system(f'start cmd.exe /c "python RedisDataProxy.py {num_terminales}"')
+    os.system(f'start cmd.exe /c "python RedisDataProxy.py"')
     for i in range(num_terminales):
         queue_name = data_sensor + str(i+1)
         #os.system(f'start cmd.exe /c "python terminal.py"')

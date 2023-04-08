@@ -60,7 +60,7 @@ class RabbitMQ:
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
         
-    def publish_data(self, message, exchange='', routing_key=''):
+    def publish_data(self, message, exchange, routing_key=''):
         self.channel.basic_publish(
             exchange=exchange,
             routing_key=routing_key,
@@ -77,8 +77,7 @@ class RedisDataProxyWithRabbitMQ(IData):
 
 
 def main():
-    num_queues = int(sys.argv[1])
-
+    
     # Crear una lista de nombres de colas dinámicamente
     
     window_size = 10  # Tamaño de la ventana
