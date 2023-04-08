@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+package data;
+
+message Data {
+  string pollution_data = 1;
+  string meteo_data = 2;
+}
+
+service DataRPC {
+  rpc GetData (Data) returns (google.protobuf.Empty) {}
+}

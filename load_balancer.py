@@ -16,7 +16,6 @@ import server_pb2_grpc
 
 
 class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
-    # TODO lb_id increment
     lb_id = 0
 
     def __init__(self, servers, server_address):
@@ -88,7 +87,7 @@ def server():
     cont += 1
 
     # Bind the server to a port and start it
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port('[::]:50052')
     print("gRPC server starting...")
     server.start()
 
