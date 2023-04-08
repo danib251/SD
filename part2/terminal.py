@@ -18,6 +18,7 @@ class RabbitMQConsumer:
 
     def handle_message(self, channel, method, properties, body):
         message = json.loads(body)
+        print(message)
         self.data.put(message)
         
 
@@ -26,11 +27,12 @@ class RabbitMQConsumer:
 
     def save_data_locally(self):
         while True:
-             if not consumer.data.empty():
+            if not consumer.data.empty():
                 data = consumer.data.get()
+                receive_data(data)
                 with app.app_context():
-                    receive_data(data)
-        time.sleep(1)
+                    print(data)
+            time.sleep(1)
 
 
 app = Flask(__name__)
