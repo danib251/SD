@@ -8,8 +8,7 @@ num_sensores = int(input("Ingrese la cantidad de sensores que desea ejecutar: ")
 num_terminales = int(input("Ingrese la cantidad de terminales que desea ejecutar: ")) # un 3 per exemple necesites tot lo del redis
 
 
-data_sensor = 'sensor_data_'
-queue_name = data_sensor + str(num_terminales)
+port = '500'
 
 # Ejecutar los archivos "sensor.py" y "rabbitserver.py"
 
@@ -17,8 +16,9 @@ if os.name == 'nt':  # Windows
     os.system(f'start cmd.exe /c "python rabbitserver.py {"sensor_data"}"')
     os.system(f'start cmd.exe /c "python RedisDataProxy.py"')
     for i in range(num_terminales):
-        queue_name = data_sensor + str(i+1)
-        #os.system(f'start cmd.exe /c "python terminal.py"')
+        id = port + str(i+1)
+        print (id)
+        os.system(f'start cmd.exe /c "python terminal.py {id}"')
 elif os.name == 'posix':  # Linux o macOS
     current_dir = os.getcwd()
 

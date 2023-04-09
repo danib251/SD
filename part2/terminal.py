@@ -3,7 +3,7 @@ import json
 import queue
 import threading
 from graphic import Graphic, app
-
+import sys
 
 class RabbitMQConsumer:
     def __init__(self, rabbitmq_host, exchange, routing_key=''):
@@ -31,14 +31,17 @@ class RabbitMQConsumer:
 consumer = RabbitMQConsumer('localhost', exchange='logs')
 
 consumer_thr = threading.Thread(target=consumer.start_consuming)
-
 consumer_thr.start()
 
 print("Consumer started")
 graphic = Graphic(consumer.data)
 threading.Thread(target=graphic.process_data, daemon=True).start()
+
 print("Graphic started")
-app.run(debug=True)
+port = int(sys.argv[1])
+print("Port: ", port)
+app.run(debug=True, port=port)
+
 
 
 
