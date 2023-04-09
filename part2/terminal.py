@@ -2,7 +2,8 @@ import pika
 import json
 import queue
 import threading
-from graphic import Graphic
+from graphic import Graphic, app
+
 
 class RabbitMQConsumer:
     def __init__(self, rabbitmq_host, exchange, routing_key=''):
@@ -19,7 +20,7 @@ class RabbitMQConsumer:
 
     def handle_message(self, channel, method, properties, body):
         message = json.loads(body)
-        print(message)
+        #print(message)
         self.data.put(message)
 
     def start_consuming(self):
@@ -35,7 +36,9 @@ consumer_thr.start()
 
 print("Consumer started")
 graphic = Graphic(consumer.data)
-graphic.process_data()
+threading.Thread(target=graphic.process_data, daemon=True).start()
+print("Graphic started")
+app.run(debug=True)
 
 
 
