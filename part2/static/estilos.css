@@ -1,0 +1,40 @@
+
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.data-row:last-child {
+  border-bottom: none;
+}
+
+
+#data-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+#table-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: #ccc;
+  padding: 10px;
+  font-weight: bold;
+  max-width: 600px;
+  margin: 0 auto;
+}
+#table-header span {
+  width: calc(33.33% - 10px);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#table-header span.time {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
