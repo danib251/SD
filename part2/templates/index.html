@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div id="data-container">
+      <!-- Aquí se mostrarán los datos -->
+    </div>
+
+    <script>
+      // Función para actualizar los datos en el contenedor
+      function updateData() {
+        $.get('/data', function(data) {
+          $('#data-container').text(data);
+        });
+      }
+
+      // Actualizar los datos cada 3 segundos
+      setInterval(updateData, 3000);
+    </script>
+  </body>
+</html>
