@@ -16,8 +16,10 @@ class Graphic:
         while True:
             if not self.queue.empty():
                 data = self.queue.get()
-                print(data)
-                datos_globales.append(data)
+                datos_globales.append({"air_data_mean": data["air_data_mean"],
+                       "co2_data_mean": data["co2_data_mean"],
+                       "time": data["time"]})
+                print(datos_globales)
             time.sleep(3)
 
 @app.route('/')
@@ -26,7 +28,7 @@ def index():
 
 @app.route('/data')
 def data():
-    return json.dumps(datos_globales)
+    return json.dumps(datos_globales) if datos_globales else "[]"
     
 
 

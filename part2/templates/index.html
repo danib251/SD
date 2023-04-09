@@ -5,15 +5,32 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
   <body>
-    <div id="data-container">
-      <!-- Aquí se mostrarán los datos -->
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Air Data Mean</th>
+          <th>CO2 Data Mean</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="data-container">
+        <!-- Aquí se mostrarán los datos -->
+      </tbody>
+    </table>
 
     <script>
       // Función para actualizar los datos en el contenedor
       function updateData() {
         $.get('/data', function(data) {
-          $('#data-container').text(data);
+          data = JSON.parse(data);
+          $('#data-container').empty();
+          for (var i = 0; i < data.length; i++) {
+            var row = $('<tr>');
+            row.append($('<td>').text(data[i].air_data_mean));
+            row.append($('<td>').text(data[i].co2_data_mean));
+            row.append($('<td>').text(new Date(data[i].time*1000)));
+            $('#data-container').append(row);
+          }
         });
       }
 
