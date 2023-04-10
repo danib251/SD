@@ -23,22 +23,25 @@ class Sensor:
     def send_data(self):
         weather_data = MeteoDataDetector()
         meteo_data = weather_data.analyze_air()
+        if self.sensor_id % 2 == 0:
+            info = sensor_pb2.MeteoData(
+                sensor_id=self.sensor_id,
+                meteo_data=sensor_pb2.TempHumidity(
+                    temperature=meteo_data['temperature'],
+                    humidity=meteo_data['humidity']
+                ),
+                timestamp=int(time.time())
+            )
+            print(f"Sending meteo data from sensor {self.sensor_id}...")
+            self.stub.ProcessMeteoData(info)
 
-        info = sensor_pb2.MeteoData(
-            sensor_id=self.sensor_id,
-            meteo_data=sensor_pb2.TempHumidity(
-                temperature=meteo_data['temperature'],
-                humidity=meteo_data['humidity']
-            ),
-            timestamp=int(time.time())
-        )
-        pollution_data = weather_data.analyze_pollution()
-        info2 = sensor_pb2.PollutionData(
-            sensor_id=self.sensor_id,
-            co2=pollution_data['co2'],
-            timestamp=int(time.time())
-        )
+        else:
+            pollution_data = weather_data.analyze_pollution()
+            info = sensor_pb2.PollutionData(
+                sensor_id=self.sensor_id,
+                co2=pollution_data['co2'],
+                timestamp=int(time.time())
+            )
+            print(f"Sending pollution data from sensor {self.sensor_id}...")
+            self.stub.ProcessPollutionData(info)
 
-        print(f"Sending data from sensor {self.sensor_id}...")
-        self.stub.ProcessMeteoData(info)
-        self.stub.ProcessPollutionData(info2)
