@@ -5,7 +5,6 @@ isort:skip_file
 import builtins
 import google.protobuf.descriptor
 import google.protobuf.message
-import google.protobuf.timestamp_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -43,16 +42,15 @@ class MeteoData(google.protobuf.message.Message):
     sensor_id: builtins.int
     @property
     def meteo_data(self) -> global___TempHumidity: ...
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    timestamp: builtins.int
     def __init__(
         self,
         *,
         sensor_id: builtins.int = ...,
         meteo_data: global___TempHumidity | None = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        timestamp: builtins.int = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data", "timestamp", b"timestamp"]) -> builtins.bool: ...
+    def HasField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data", "sensor_id", b"sensor_id", "timestamp", b"timestamp"]) -> None: ...
 
 global___MeteoData = MeteoData
@@ -66,16 +64,14 @@ class PollutionData(google.protobuf.message.Message):
     TIMESTAMP_FIELD_NUMBER: builtins.int
     co2: builtins.float
     sensor_id: builtins.int
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    timestamp: builtins.int
     def __init__(
         self,
         *,
         co2: builtins.float = ...,
         sensor_id: builtins.int = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        timestamp: builtins.int = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["co2", b"co2", "sensor_id", b"sensor_id", "timestamp", b"timestamp"]) -> None: ...
 
 global___PollutionData = PollutionData

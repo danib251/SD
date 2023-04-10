@@ -87,7 +87,7 @@ def server():
     cont += 1
 
     # Bind the server to a port and start it
-    server.add_insecure_port('[::]:50052')
+    server.add_insecure_port('[::]:50051')
     print("gRPC server starting...")
     server.start()
 

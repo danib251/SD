@@ -30,13 +30,13 @@ class Sensor:
                 temperature=meteo_data['temperature'],
                 humidity=meteo_data['humidity']
             ),
-            timestamp=timestamp_pb2.Timestamp()
+            timestamp=int(time.time())
         )
         pollution_data = weather_data.analyze_pollution()
         info2 = sensor_pb2.PollutionData(
             sensor_id=self.sensor_id,
             co2=pollution_data['co2'],
-            timestamp=timestamp_pb2.Timestamp()
+            timestamp=int(time.time())
         )
 
         print(f"Sending data from sensor {self.sensor_id}...")

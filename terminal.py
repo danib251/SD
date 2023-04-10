@@ -1,3 +1,4 @@
+import argparse
 from concurrent import futures
 
 import google.protobuf
@@ -8,18 +9,23 @@ import data_pb2_grpc
 
 class Terminal(data_pb2_grpc.DataRPCServicer):
     def GetData(self, request, context):
-        print(request)
+        print(request.pollution_data, request.meteo_data)
         return google.protobuf.empty_pb2.Empty()
 
-def server():
-    # Create a gRPC server and add the LoadBalancerServicer
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+
+def server(instance_id):
+    port = 50053 + instance_id
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
     data_pb2_grpc.add_DataRPCServicer_to_server(Terminal(), server)
-    server.add_insecure_port("[::]:50053")
+    server.add_insecure_port("[::]:{}".format(port))
     server.start()
-    print("gRPC server starting...")
+    print("gRPC server starting on port {}...".format(port))
     server.wait_for_termination()
 
 
+
 if __name__ == "__main__":
-    server()
+    parser = argparse.ArgumentParser(description='Terminal instance')
+    parser.add_argument('id', type=int, help='an integer ID for the terminal instance')
+    args = parser.parse_args()
+    server(args.id)

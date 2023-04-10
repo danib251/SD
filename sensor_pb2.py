@@ -16,7 +16,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0csensor.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"5\n\x0cTempHumidity\x12\x13\n\x0btemperature\x18\x01 \x01(\x02\x12\x10\n\x08humidity\x18\x02 \x01(\x02\"p\n\tMeteoData\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12!\n\nmeteo_data\x18\x02 \x01(\x0b\x32\r.TempHumidity\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"^\n\rPollutionData\x12\x0b\n\x03\x63o2\x18\x01 \x01(\x02\x12\x11\n\tsensor_id\x18\x02 \x01(\x05\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp2\x8a\x01\n\x0cLoadBalancer\x12\x38\n\x10ProcessMeteoData\x12\n.MeteoData\x1a\x16.google.protobuf.Empty\"\x00\x12@\n\x14ProcessPollutionData\x12\x0e.PollutionData\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0csensor.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"5\n\x0cTempHumidity\x12\x13\n\x0btemperature\x18\x01 \x01(\x02\x12\x10\n\x08humidity\x18\x02 \x01(\x02\"T\n\tMeteoData\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12!\n\nmeteo_data\x18\x02 \x01(\x0b\x32\r.TempHumidity\x12\x11\n\ttimestamp\x18\x04 \x01(\x05\"B\n\rPollutionData\x12\x0b\n\x03\x63o2\x18\x01 \x01(\x02\x12\x11\n\tsensor_id\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x04 \x01(\x05\x32\x8a\x01\n\x0cLoadBalancer\x12\x38\n\x10ProcessMeteoData\x12\n.MeteoData\x1a\x16.google.protobuf.Empty\"\x00\x12@\n\x14ProcessPollutionData\x12\x0e.PollutionData\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
 
 
 
@@ -51,9 +51,9 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _TEMPHUMIDITY._serialized_start=78
   _TEMPHUMIDITY._serialized_end=131
   _METEODATA._serialized_start=133
-  _METEODATA._serialized_end=245
-  _POLLUTIONDATA._serialized_start=247
-  _POLLUTIONDATA._serialized_end=341
-  _LOADBALANCER._serialized_start=344
-  _LOADBALANCER._serialized_end=482
+  _METEODATA._serialized_end=217
+  _POLLUTIONDATA._serialized_start=219
+  _POLLUTIONDATA._serialized_end=285
+  _LOADBALANCER._serialized_start=288
+  _LOADBALANCER._serialized_end=426
 # @@protoc_insertion_point(module_scope)

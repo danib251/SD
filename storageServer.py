@@ -15,6 +15,7 @@ class StorageServer(server_pb2_grpc.ServerServicer):
         self.sensor_id = 0
         self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
+        # TODO time
     def ReceivedMeteoData(self, request, context):
         # Choose a server in round-robin fashion
         server = self.servers[self.server_index]
