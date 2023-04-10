@@ -45,7 +45,7 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         info = server_pb2.ProcessedMeteoData(
             lb_id=self.lb_id,
             air_wellness=air_processed,
-            timestamp=timestamp_pb2.Timestamp()
+            timestamp=int(time.time())
         )
         print(f"Sending data from LB {self.lb_id}...")
         self.stub.ReceivedMeteoData(info)
@@ -69,7 +69,7 @@ class LoadBalancer(sensor_pb2_grpc.LoadBalancerServicer):
         info = server_pb2.ProcessedPollutionData(
             lb_id=self.lb_id,
             pollution_coefficient=pollution_processed,
-            timestamp=timestamp_pb2.Timestamp()
+            timestamp=int(time.time())
         )
         print(f"Sending data from LB {self.lb_id}...")
         self.stub.ReceivedPollutionData(info)

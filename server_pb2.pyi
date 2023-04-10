@@ -5,7 +5,6 @@ isort:skip_file
 import builtins
 import google.protobuf.descriptor
 import google.protobuf.message
-import google.protobuf.timestamp_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -24,16 +23,14 @@ class ProcessedMeteoData(google.protobuf.message.Message):
     TIMESTAMP_FIELD_NUMBER: builtins.int
     lb_id: builtins.int
     air_wellness: builtins.float
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    timestamp: builtins.int
     def __init__(
         self,
         *,
         lb_id: builtins.int = ...,
         air_wellness: builtins.float = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        timestamp: builtins.int = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["air_wellness", b"air_wellness", "lb_id", b"lb_id", "timestamp", b"timestamp"]) -> None: ...
 
 global___ProcessedMeteoData = ProcessedMeteoData
@@ -47,16 +44,14 @@ class ProcessedPollutionData(google.protobuf.message.Message):
     TIMESTAMP_FIELD_NUMBER: builtins.int
     pollution_coefficient: builtins.float
     lb_id: builtins.int
-    @property
-    def timestamp(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    timestamp: builtins.int
     def __init__(
         self,
         *,
         pollution_coefficient: builtins.float = ...,
         lb_id: builtins.int = ...,
-        timestamp: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        timestamp: builtins.int = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["timestamp", b"timestamp"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["lb_id", b"lb_id", "pollution_coefficient", b"pollution_coefficient", "timestamp", b"timestamp"]) -> None: ...
 
 global___ProcessedPollutionData = ProcessedPollutionData

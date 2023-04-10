@@ -20,14 +20,17 @@ class Data(google.protobuf.message.Message):
 
     POLLUTION_DATA_FIELD_NUMBER: builtins.int
     METEO_DATA_FIELD_NUMBER: builtins.int
+    TIMESTAMP_FIELD_NUMBER: builtins.int
     pollution_data: builtins.str
     meteo_data: builtins.str
+    timestamp: builtins.int
     def __init__(
         self,
         *,
         pollution_data: builtins.str = ...,
         meteo_data: builtins.str = ...,
+        timestamp: builtins.int = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data", "pollution_data", b"pollution_data"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["meteo_data", b"meteo_data", "pollution_data", b"pollution_data", "timestamp", b"timestamp"]) -> None: ...
 
 global___Data = Data

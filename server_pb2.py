@@ -13,10 +13,9 @@ _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cserver.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"h\n\x12ProcessedMeteoData\x12\r\n\x05lb_id\x18\x01 \x01(\x05\x12\x14\n\x0c\x61ir_wellness\x18\x02 \x01(\x02\x12-\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"u\n\x16ProcessedPollutionData\x12\x1d\n\x15pollution_coefficient\x18\x01 \x01(\x02\x12\r\n\x05lb_id\x18\x02 \x01(\x05\x12-\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp2\x98\x01\n\x06Server\x12\x42\n\x11ReceivedMeteoData\x12\x13.ProcessedMeteoData\x1a\x16.google.protobuf.Empty\"\x00\x12J\n\x15ReceivedPollutionData\x12\x17.ProcessedPollutionData\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cserver.proto\x1a\x1bgoogle/protobuf/empty.proto\"L\n\x12ProcessedMeteoData\x12\r\n\x05lb_id\x18\x01 \x01(\x05\x12\x14\n\x0c\x61ir_wellness\x18\x02 \x01(\x02\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\"Y\n\x16ProcessedPollutionData\x12\x1d\n\x15pollution_coefficient\x18\x01 \x01(\x02\x12\r\n\x05lb_id\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x04 \x01(\x05\x32\x98\x01\n\x06Server\x12\x42\n\x11ReceivedMeteoData\x12\x13.ProcessedMeteoData\x1a\x16.google.protobuf.Empty\"\x00\x12J\n\x15ReceivedPollutionData\x12\x17.ProcessedPollutionData\x1a\x16.google.protobuf.Empty\"\x00\x62\x06proto3')
 
 
 
@@ -40,10 +39,10 @@ _SERVER = DESCRIPTOR.services_by_name['Server']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _PROCESSEDMETEODATA._serialized_start=78
-  _PROCESSEDMETEODATA._serialized_end=182
-  _PROCESSEDPOLLUTIONDATA._serialized_start=184
-  _PROCESSEDPOLLUTIONDATA._serialized_end=301
-  _SERVER._serialized_start=304
-  _SERVER._serialized_end=456
+  _PROCESSEDMETEODATA._serialized_start=45
+  _PROCESSEDMETEODATA._serialized_end=121
+  _PROCESSEDPOLLUTIONDATA._serialized_start=123
+  _PROCESSEDPOLLUTIONDATA._serialized_end=212
+  _SERVER._serialized_start=215
+  _SERVER._serialized_end=367
 # @@protoc_insertion_point(module_scope)

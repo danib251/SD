@@ -5,6 +5,7 @@ package data;
 message Data {
   string pollution_data = 1;
   string meteo_data = 2;
+  int32 timestamp = 3;
 }
 
 service DataRPC {

@@ -46,7 +46,8 @@ class DataServicer:
                     print(f"Average pollution value: {pollution_average}")
                     data = data_pb2.Data(
                         pollution_data=json.dumps({"pollution_coefficient": pollution_average}),
-                        meteo_data=json.dumps({"air_wellness": meteo_average})
+                        meteo_data=json.dumps({"air_wellness": meteo_average}),
+                        timestamp=int(time.time())
                     )
                     # Enviar datos a todas las instancias de terminales
                     for stub in self.stubs:
