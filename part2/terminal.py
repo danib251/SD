@@ -29,7 +29,6 @@ class RabbitMQConsumer:
 
 
 consumer = RabbitMQConsumer('localhost', exchange='logs')
-
 consumer_thr = threading.Thread(target=consumer.start_consuming)
 consumer_thr.start()
 

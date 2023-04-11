@@ -38,17 +38,10 @@ class RedisData(IData):
             elif 'co2_wellness' in data:
                 co2_data_mean = statistics.mean([data['co2_wellness'] for data in co2_data_list])
             first_time = data_list[0]['time']
-
+            print("\rnumerode datos:", len(data_list))
             print("\rDatos de aire:", air_data_list)
             print("\rDatos de CO2:", co2_data_list)
 
-            
-
-            # obtener la lista de consumidores
-            #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
-            #self.rabbitmq.publish_data(queue_name, json.dumps(air_data_dict, ensure_ascii=False))
-            #self.rabbitmq.publish_data(queue_name, json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
-            #self.rabbitmq.publish_data(exchange='logs', routing_key='', body=json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False))
             self.rabbitmq.publish_data(json.dumps({"air_data_mean": air_data_mean, "co2_data_mean": co2_data_mean, "time": first_time}, ensure_ascii=False),exchange='logs')
         else:
             print("\rNo hay datos en Redis")
