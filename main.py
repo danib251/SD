@@ -2,14 +2,14 @@ import os
 import time
 from sensor import Sensor
 
-from meteo_utils import MeteoDataProcessor 
-from meteo_utils import MeteoDataDetector 
+from meteo_utils import MeteoDataProcessor
+from meteo_utils import MeteoDataDetector
 
 if __name__ == '__main__':
     cont = 0
     # Solicitar la cantidad de sensores que el usuario desea ejecutar
     num_sensores = int(input("Ingrese la cantidad de sensores que desea ejecutar: "))
-    # Solicitar la cantidad de terminales que el usuario desea ejecutar
+    # Solicitar la cantidad   a de terminales que el usuario desea ejecutar
     num_terminales = int(
         input("Ingrese la cantidad de terminales que desea ejecutar: "))
 
