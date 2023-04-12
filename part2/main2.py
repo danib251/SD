@@ -1,6 +1,7 @@
 import time
-from sensor import Sensor
+from sensor2 import Sensor
 import os
+import webbrowser
 
 # Solicitar la cantidad de sensores que el usuario desea ejecutar
 num_sensores = int(input("Ingrese la cantidad de sensores que desea ejecutar: ")) #un 2 per exemple
@@ -12,14 +13,17 @@ num_terminales = int(input("Ingrese la cantidad de terminales que desea ejecutar
 
 # Ejecutar los archivos "sensor.py" y "rabbitserver.py"
 port = '500'
+url = 'http://localhost:'
 if os.name == 'nt':  # Windows
     os.system(f'start cmd.exe /c "python RedisDataProxy.py"')
+    for i in range(num_servers):
+        os.system(f'start cmd.exe /c "python rabbitserver.py {"sensor_data"}"')
     for i in range(num_terminales):
         id = port + str(i+1)
         print (id)
         os.system(f'start cmd.exe /c "python terminal.py {id}"')
-    for i in range(num_servers):
-        os.system(f'start cmd.exe /c "python rabbitserver.py {"sensor_data"}"')
+        webbrowser.open(url + id)
+    
         
 elif os.name == 'posix':  # Linux o macOS
     current_dir = os.getcwd()

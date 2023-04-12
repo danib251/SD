@@ -18,9 +18,10 @@ class RedisData(IData):
         co2_data_list = []
         air_data_mean = -1
         co2_data_mean = -1
-        list_elements = self.redis_client.lrange('list', 0, self.window_size - 1)
-        if len(list_elements) > 0:
+        list_size = self.redis_client.llen('list')
+        if list_size > 0:
             # Decodificar datos JSON y guardar en una lista
+            list_elements = self.redis_client.lrange('list', 0, list_size - 1)
             data_list = [json.loads(element) for element in list_elements]
 
             # Eliminar elementos de la lista en Redis

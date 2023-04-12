@@ -12,7 +12,6 @@ class Graphic:
         self.queue = queue
         
     def process_data(self):
-        print("Procesando datosasdzfsdhjgfhvsfdbjfvxzhjvf")
         while True:
             if not self.queue.empty():
                 data = self.queue.get()
