@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <div id="table-header">
+      <span>Air Data Mean</span>
+      <span>CO2 Data Mean</span>
+      <span class="time">Time</span>
+    </div>
+    <div id="data-container">
+      <!-- Aquí se mostrarán los datos -->
+    </div>
+
+    <script>
+      // Función para actualizar los datos en el contenedor
+      function updateData() {
+        $.get('/data', function(data) {
+          // Convertir los datos JSON en objetos JavaScript
+          var rows = JSON.parse(data);
+          
+          // Crear una fila HTML para cada objeto
+          var html = '';
+          for (var i = 0; i < rows.length; i++) {
+            html += '<div class="data-row">';
+            html += '<span>' + rows[i].air_data_mean.toFixed(2) + '</span>';
+            html += '<span>' + rows[i].co2_data_mean.toFixed(2) + '</span>';
+            html += '<span class="time">' + new Date(rows[i].time * 1000).toLocaleString() + '</span>';
+            html += '</div>';
+          }
+          
+          // Actualizar el contenido del contenedor con las filas HTML generadas
+          $('#data-container').html(html);
+         
+        });
+      }
+
+      // Actualizar los datos cada 3 segundos
+      setInterval(updateData, 3000);
+    </script>
+  </body>
+</html>

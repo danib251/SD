@@ -41,7 +41,7 @@ class Sensor:
                 'co2': pollution_data['co2']
             }
 
-        print(f"Sending data from sensor {self.sensor_id}...")
+        print(f"Sending data from sensor {self.sensor_id}....")
         print(sensor_data)
         message = json.dumps(sensor_data).encode('utf-8')
         self.channel_rmq.basic_publish(exchange='', routing_key='sensor_data', body=message)                          

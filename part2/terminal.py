@@ -1,46 +1,47 @@
-import json
 import pika
-import signal
+import json
+import queue
+import threading
+from graphic import Graphic, app
+import sys
 
-class RabbitMQSubscriber:
-    def __init__(self, host, port):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host, port))
+class RabbitMQConsumer:
+    def __init__(self, rabbitmq_host, exchange, routing_key=''):
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host))
         self.channel = self.connection.channel()
-        self.channel.exchange_declare(exchange='logs', exchange_type='fanout')
-        result = self.channel.queue_declare(queue='', exclusive=True)
-        self.queue_name = result.method.queue
-        self.channel.queue_bind(exchange='logs', queue=self.queue_name)
-        self.channel.basic_consume(
-            queue=self.queue_name,
-            on_message_callback=self.callback,
-            auto_ack=True
-        )
+        self.channel.exchange_declare(exchange=exchange, exchange_type='fanout')
+        self.result = self.channel.queue_declare(queue='', exclusive=True)
+        self.queue = self.result.method.queue
+        self.channel.queue_bind(exchange=exchange, queue=self.queue, routing_key=routing_key)
+        
+        
+        self.channel.basic_consume(queue=self.queue, on_message_callback=self.handle_message, auto_ack=True)
+        self.data = queue.Queue()
 
+    def handle_message(self, channel, method, properties, body):
+        message = json.loads(body)
+        #print(message)
+        self.data.put(message)
 
-
-    def subscribe(self):
+    def start_consuming(self):
         self.channel.start_consuming()
 
-    def disconnect(self):
-        if self.connection is not None:
-            self.connection.close()
-
-    def callback(self, ch, method, properties, body):
-        data = json.loads(body)
-        print("Mensaje recibido:", data)
-
-def sigint_handler(signal, frame):
-    print('Desconectando...')
-    subscriber.disconnect()
-    exit(0)
 
 
+consumer = RabbitMQConsumer('localhost', exchange='logs')
+consumer_thr = threading.Thread(target=consumer.start_consuming)
+consumer_thr.start()
 
-subscriber = RabbitMQSubscriber('localhost', 5672)
-signal.signal(signal.SIGINT, sigint_handler)
+print("Consumer started")
+graphic = Graphic(consumer.data)
+threading.Thread(target=graphic.process_data, daemon=True).start()
 
-print("Conectando al broker...")
+print("Graphic started")
+port = int(sys.argv[1])
+print("Port: ", port)
+app.run(debug=True, port=port)
 
-print("Suscribiendo al exchange 'logs'...")
-subscriber.subscribe()
+
+
+
 
