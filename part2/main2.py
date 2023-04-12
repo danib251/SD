@@ -20,7 +20,6 @@ if os.name == 'nt':  # Windows
         os.system(f'start cmd.exe /c "python rabbitserver.py {"sensor_data"}"')
     for i in range(num_terminales):
         id = port + str(i+1)
-        print (id)
         os.system(f'start cmd.exe /c "python terminal.py {id}"')
         webbrowser.open(url + id)
     
