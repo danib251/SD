@@ -29,11 +29,14 @@ elif os.name == 'posix':  # Linux o macOS
 
     #os.system(f'gnome-terminal -- python rabbitserver.py {"sensor_data"}')
     #os.system(f'gnome-terminal -- python RedisDataProxy.py {num_terminales}')
-    os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python rabbitserver.py sensor_data"\'')
     os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python RedisDataProxy.py {num_terminales}"\'')
+    for i in range(num_servers):
+        os.system(
+            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python rabbitserver.py {"sensor_data"}"\'')
     for i in range(num_terminales):
-        queue_name = data_sensor + str(i+1)
+        queue_name = port + str(i+1)
         os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python terminal.py"\'')
+        webbrowser.open(url + id)
 else:
     print("Sistema operativo no compatible")
 

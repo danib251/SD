@@ -27,16 +27,16 @@ if __name__ == '__main__':
         # os.system(f'gnome-terminal -- python rabbitserver.py {"sensor_data"}')
         # os.system(f'gnome-terminal -- python RedisDataProxy.py {num_terminales}')
         os.system(
-            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python load_balancer.py"\'')
+            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir}/direct && python load_balancer.py"\'')
         os.system(
-            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python storageServer.py"\'')
+            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir}/direct && python storageServer.py"\'')
         time.sleep(2)
         for i in range(num_terminales):
             queue_name = data_sensor + str(i + 1)
-            os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python terminal.py {i}"\'')
+            os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir}/direct && python terminal.py {i}"\'')
         time.sleep(2)
         os.system(
-            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python redis_proxy.py {num_terminales}"\'')
+            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir}/direct && python redis_proxy.py {num_terminales}"\'')
 
     else:
         print("Sistema operativo no compatible")
