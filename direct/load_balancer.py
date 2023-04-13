@@ -1,13 +1,10 @@
-import random
 import grpc
 import time
 
 from google.protobuf import timestamp_pb2
 
 import meteo_utils
-import sensor_pb2
 import sensor_pb2_grpc
-import google.protobuf.timestamp_pb2 as timestamp_pb2
 from concurrent import futures
 import google.protobuf
 

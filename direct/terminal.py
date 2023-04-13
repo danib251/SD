@@ -3,10 +3,8 @@ import json
 from concurrent import futures
 import google.protobuf
 import grpc
-import matplotlib
 from matplotlib import pyplot as plt
 
-import data_pb2
 import data_pb2_grpc
 from rich.console import Console
 

@@ -12,7 +12,8 @@ print("Suscribiendo consumidor a la cola:", args.queue)
 
 utils_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'utils')
 sys.path.append(utils_dir)
-import meteo_utils
+from direct import meteo_utils
+
 # Conexión a Redis
 redis_client = redis.Redis()
 # Conexión a RabbitMQ
