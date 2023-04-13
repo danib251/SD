@@ -8,7 +8,7 @@ import json
 utils_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'utils')
 sys.path.append(utils_dir)
 
-from direct.meteo_utils import MeteoDataDetector
+from meteo_utils import MeteoDataDetector
 
 
 weather_data = MeteoDataDetector()
