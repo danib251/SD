@@ -1,3 +1,4 @@
+#%%
 import argparse
 import json
 from concurrent import futures
@@ -35,7 +36,7 @@ class Terminal(data_pb2_grpc.DataRPCServicer):
         axs[1].set_xlabel('Time (s)')
         axs[1].set_ylabel('Pollution')
         axs[1].legend()
-
+        #%%
         plt.draw()
         plt.pause(0.001)
 
@@ -57,3 +58,5 @@ if __name__ == "__main__":
     parser.add_argument('id', type=int, help='an integer ID for the terminal instance')
     args = parser.parse_args()
     server(args.id)
+
+# %%

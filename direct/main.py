@@ -1,3 +1,4 @@
+#%%
 import os
 import time
 from sensor import Sensor
@@ -11,16 +12,16 @@ if __name__ == '__main__':
     num_terminales = int(
         input("Ingrese la cantidad de terminales que desea ejecutar: "))
 
-    data_sensor = 'sensor_data_'
-    queue_name = data_sensor + str(num_terminales)
+    
+    
 
     if os.name == 'nt':  # Windows
         os.system(f'start cmd.exe /c "python load_balancer.py"')
         os.system(f'start cmd.exe /c "python storageServer.py"')
-        os.system(f'start cmd.exe /c "python redis_proxy.py"')
         for i in range(num_terminales):
-            queue_name = data_sensor + str(i + 1)
-            os.system(f'start cmd.exe /c "python terminal.py"')
+            
+            os.system(f'start cmd.exe /c "python terminal.py {i}"')
+        os.system(f'start cmd.exe /c "python redis_proxy.py {num_terminales}"')
     elif os.name == 'posix':  # Linux o macOS
         current_dir = os.getcwd()
 
@@ -32,7 +33,6 @@ if __name__ == '__main__':
             f'osascript -e \'tell app "Terminal" to do script "cd {current_dir}/direct && python storageServer.py"\'')
         time.sleep(2)
         for i in range(num_terminales):
-            queue_name = data_sensor + str(i + 1)
             os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir}/direct && python terminal.py {i}"\'')
         time.sleep(2)
         os.system(
