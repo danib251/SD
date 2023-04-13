@@ -7,9 +7,7 @@ from meteo_utils import MeteoDataDetector
 
 if __name__ == '__main__':
     cont = 0
-    # Solicitar la cantidad de sensores que el usuario desea ejecutar
     num_sensores = int(input("Ingrese la cantidad de sensores que desea ejecutar: "))
-    # Solicitar la cantidad   a de terminales que el usuario desea ejecutar
     num_terminales = int(
         input("Ingrese la cantidad de terminales que desea ejecutar: "))
 
@@ -38,7 +36,7 @@ if __name__ == '__main__':
             os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python terminal.py {i}"\'')
         time.sleep(2)
         os.system(
-            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python redis_proxy.py"\'')
+            f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python redis_proxy.py {num_terminales}"\'')
 
     else:
         print("Sistema operativo no compatible")
@@ -48,15 +46,3 @@ if __name__ == '__main__':
         sensor.send_data() # Enviar datos al load balancer
         cont += 1
         time.sleep(1) # Esperar 10 segundos antes de enviar nuevos datos
-
-    weather_data = MeteoDataDetector()
-    processor = MeteoDataProcessor()
-
-    # Generar 5 registros de datos de tiempo
-
-    meteo_data = weather_data.analyze_air()
-    pollution_data = weather_data.analyze_pollution()
-    wellness_data = processor.process_meteo_data(meteo_data)
-
-    pollution_data = processor.process_pollution_data(pollution_data)
-    print(pollution_data)

@@ -1,5 +1,6 @@
 import json
 import statistics
+import sys
 
 import redis
 import grpc
@@ -12,8 +13,8 @@ class DataServicer:
     def __init__(self, proxy_address):
         self.redis_client = redis.Redis()
         self.proxy_address = proxy_address
-        self.channels = []  # lista de canales gRPC
-        self.stubs = []  # lista de stubs gRPC
+        self.channels = []
+        self.stubs = []
         self.sent_data = set()
         self.instance_id = None
         self.meteo_values = []
@@ -25,19 +26,22 @@ class DataServicer:
             pollution_data = self.redis_client.hgetall("pollution_data")
             meteo_data = self.redis_client.hgetall("meteo_data")
 
-            pollution_data_dict = {k.decode(): v.decode() for k, v in pollution_data.items()}
-            meteo_data_dict = {k.decode(): v.decode() for k, v in meteo_data.items()}
+            pollution_keys = list(pollution_data.keys())
+            meteo_keys = list(meteo_data.keys())
 
-            for pollution_key, meteo_key in zip(pollution_data_dict.keys(), meteo_data_dict.keys()):
+            for pollution_key, meteo_key in zip(pollution_keys, meteo_keys):
                 if pollution_key not in self.sent_data and meteo_key not in self.sent_data:
-                    meteo_value = json.loads(meteo_data_dict[meteo_key])["air_wellness"]
-                    pollution_value = json.loads(pollution_data_dict[pollution_key])["pollution_coefficient"]
+                    meteo_value = json.loads(meteo_data[meteo_key])["air_wellness"]
+                    pollution_value = json.loads(pollution_data[pollution_key])["pollution_coefficient"]
                     self.meteo_values.append(meteo_value)
                     self.pollution_values.append(pollution_value)
                     self.sent_data.add(pollution_key)
                     self.sent_data.add(meteo_key)
 
-            # Calcular promedio cada 10 segundos
+                    # Eliminar datos procesados de Redis
+                    self.redis_client.hdel("pollution_data", pollution_key)
+                    self.redis_client.hdel("meteo_data", meteo_key)
+
             if self.last_average_time is None or time.time() - self.last_average_time >= 10:
                 if self.meteo_values and self.pollution_values:
                     meteo_average = statistics.mean(self.meteo_values)
@@ -49,7 +53,6 @@ class DataServicer:
                         meteo_data=json.dumps({"air_wellness": meteo_average}),
                         timestamp=int(time.time())
                     )
-                    # Enviar datos a todas las instancias de terminales
                     for stub in self.stubs:
                         stub.GetData(data)
                     self.meteo_values.clear()
@@ -68,5 +71,5 @@ class DataServicer:
 
 if __name__ == "__main__":
     data_servicer = DataServicer(proxy_address='localhost:50053')
-    data_servicer.register_clients(num_clients=2)
+    data_servicer.register_clients(num_clients=int(sys.argv[1]))
     data_servicer.send_data()
