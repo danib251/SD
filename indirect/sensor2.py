@@ -14,9 +14,8 @@ from meteo_utils import MeteoDataDetector
 weather_data = MeteoDataDetector()
 
 class Sensor:
-    def __init__(self, sensor_id, server_address):
+    def __init__(self, sensor_id):
         self.sensor_id = sensor_id
-        self.server_address = server_address
         self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.channel_rmq = self.connection.channel()
         self.channel_rmq.queue_declare(queue='sensor_data')

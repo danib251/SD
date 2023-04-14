@@ -41,7 +41,7 @@ else:
     print("Sistema operativo no compatible")
 
 
-sensors = [Sensor(i, server_address='localhost:50051') for i in range(num_sensores)]
+sensors = [Sensor(i) for i in range(num_sensores)]
 while True:
 
     for sensor in sensors:

@@ -17,7 +17,7 @@ if __name__ == '__main__':
         os.system(f'start cmd.exe /c "python load_balancer.py {num_servers}"')
         for i in range(num_servers):
             os.system(f'start cmd.exe /c "python storageServer.py {i}"')
-        for i in range(num_terminales):
+        #for i in range(num_terminales):
             os.system(f'start cmd.exe /c "python terminal.py {i}"')
         os.system(f'start cmd.exe /c "python redis_proxy.py {num_terminales}"')
     elif os.name == 'posix':  # Linux o macOS
@@ -39,10 +39,14 @@ if __name__ == '__main__':
 
     else:
         print("Sistema operativo no compatible")
+    
+    sensores = []
+    for i in range(num_sensores):
+        sensor = Sensor(sensor_id=i, data_id=cont, server_address='localhost:50051')
+        sensores.append(sensor)
+        cont += 1
 
     while True:
-        for i in range(num_sensores):
-            sensor = Sensor(sensor_id=i, data_id=cont, server_address='localhost:50051')
+        for sensor in sensores:
             sensor.send_data()  # Enviar datos al load balancer
-            cont += 1
-            time.sleep(1)  # Esperar 10 segundos antes de enviar nuevos datos
+        time.sleep(1)
