@@ -1,3 +1,5 @@
+import sys
+
 import grpc
 import time
 
@@ -80,7 +82,7 @@ def server():
     cont = 0
     # Create a gRPC server and add the LoadBalancerServicer
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
-    sensor_pb2_grpc.add_LoadBalancerServicer_to_server(LoadBalancer(["Server1", "Server2"], 'localhost:50052'), server)
+    sensor_pb2_grpc.add_LoadBalancerServicer_to_server(LoadBalancer(["Server1", "Server2"], 'localhost:50056'), server)
     cont += 1
 
     # Bind the server to a port and start it

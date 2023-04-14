@@ -44,7 +44,7 @@ class Terminal(data_pb2_grpc.DataRPCServicer):
 
 
 def server(instance_id):
-    port = 50053 + instance_id
+    port = 50061 + instance_id
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
     data_pb2_grpc.add_DataRPCServicer_to_server(Terminal(), server)
     server.add_insecure_port("[::]:{}".format(port))

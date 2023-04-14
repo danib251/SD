@@ -38,7 +38,7 @@ def server():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
     server_pb2_grpc.add_ServerServicer_to_server(StorageServer(["Server1", "Server2"]), server)
 
-    server.add_insecure_port('[::]:50052')
+    server.add_insecure_port('[::]:50056')
     print("gRPC server starting...")
     server.start()
 

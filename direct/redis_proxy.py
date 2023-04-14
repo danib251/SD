@@ -63,13 +63,13 @@ class DataServicer:
 
     def register_clients(self, num_clients):
         for i in range(num_clients):
-            channel = grpc.insecure_channel(f"localhost:{50053 + i}")
+            channel = grpc.insecure_channel(f"localhost:{50061 + i}")
             stub = data_pb2_grpc.DataRPCStub(channel)
             self.channels.append(channel)
             self.stubs.append(stub)
 
 
 if __name__ == "__main__":
-    data_servicer = DataServicer(proxy_address='localhost:50053')
+    data_servicer = DataServicer(proxy_address='localhost:50061')
     data_servicer.register_clients(num_clients=int(sys.argv[1]))
     data_servicer.send_data()
