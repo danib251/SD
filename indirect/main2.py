@@ -29,7 +29,7 @@ elif os.name == 'posix':  # Linux o macOS
 
     #os.system(f'gnome-terminal -- python rabbitserver.py {"sensor_data"}')
     #os.system(f'gnome-terminal -- python RedisDataProxy.py {num_terminales}')
-    os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python RedisDataProxy.py {num_terminales}"\'')
+    os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python RedisDataProxy.py"\'')
     for i in range(num_servers):
         os.system(
             f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python rabbitserver.py {"sensor_data"}"\'')

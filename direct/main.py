@@ -17,7 +17,7 @@ if __name__ == '__main__':
         os.system(f'start cmd.exe /c "python load_balancer.py {num_servers}"')
         for i in range(num_servers):
             os.system(f'start cmd.exe /c "python storageServer.py {i}"')
-        #for i in range(num_terminales):
+        for i in range(num_terminales):
             os.system(f'start cmd.exe /c "python terminal.py {i}"')
         os.system(f'start cmd.exe /c "python redis_proxy.py {num_terminales}"')
     elif os.name == 'posix':  # Linux o macOS
