@@ -34,8 +34,8 @@ elif os.name == 'posix':  # Linux o macOS
         os.system(
             f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python rabbitserver.py {"sensor_data"}"\'')
     for i in range(num_terminales):
-        queue_name = port + str(i+1)
-        os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python terminal.py"\'')
+        id = port + str(i+1) 
+        os.system(f'osascript -e \'tell app "Terminal" to do script "cd {current_dir} && python terminal.py {id}"\'')
         webbrowser.open(url + id)
 else:
     print("Sistema operativo no compatible")
